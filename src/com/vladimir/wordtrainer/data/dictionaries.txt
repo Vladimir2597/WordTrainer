@@ -1,2 +1,6 @@
+Types of films=dictionary/typesOfFilms.txt
+TV Show Recommendations=dictionary/tvShowRecommendations.txt
 Halloween words=dictionary/halloween.txt
-Description of films=dictionary/film.txt
+My Notes=dictionary/myNotes.txt
+Irregular verbs=dictionary/irregularVerbs.txt
+Making Plans=dictionary/makingPlans.txt
