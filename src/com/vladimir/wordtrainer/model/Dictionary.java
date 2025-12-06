@@ -1,11 +1,8 @@
 package com.vladimir.wordtrainer.model;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Dictionary {
-    private List<Integer> usedWords = new ArrayList<>();
     private String name;
     private List<Word> words;
 
@@ -14,24 +11,19 @@ public class Dictionary {
         this.name = name;
     }
 
+    public void setWord(List<Word> words){
+        this.words = words;
+    }
+
+    public Word getWord(int index){
+        return words.get(index);
+    }
+
     public String getName(){
         return name;
     }
 
-    public Word getRandomWord() {
-        if (!usedWords.isEmpty() && usedWords.size() == words.size()) {
-            usedWords.clear();
-            System.out.println("♻️ Все слова были использованы, начинаем заново.");
-        }
-
-        Random random = new Random();
-        int unusedWordIndex;
-
-        do {
-            unusedWordIndex = random.nextInt(words.size());
-        } while (usedWords.contains(unusedWordIndex));
-
-        usedWords.add(unusedWordIndex);
-        return words.get(unusedWordIndex);
+    public int getCountWords() {
+        return words.size();
     }
 }

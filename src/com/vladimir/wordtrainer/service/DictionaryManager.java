@@ -11,10 +11,10 @@ import java.util.Map;
 public class DictionaryManager {
     private List<String> names;
     private List<String> paths;
-    private String relativePath = "src/com/vladimir/wordtrainer/data/";
+    private final static String RELATIVE_PATH = "src/com/vladimir/wordtrainer/data/";
 
     public DictionaryManager(String dictionaryFilmName){
-        Map<String, String> map = FileUtil.loadDictionaries(relativePath + dictionaryFilmName);
+        Map<String, String> map = FileUtil.loadDictionaries(RELATIVE_PATH + dictionaryFilmName);
 
         names = new ArrayList<>(map.keySet());
         paths = new ArrayList<>(map.values());
@@ -36,7 +36,7 @@ public class DictionaryManager {
         String name = names.get(index);
         String path = paths.get(index);
 
-        List<Word> words = FileUtil.loadWords(relativePath + path);
+        List<Word> words = FileUtil.loadWords(RELATIVE_PATH + path);
 
         return new Dictionary(words, name);
     }

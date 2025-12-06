@@ -21,3 +21,6 @@ Thumbs.db
 
 # Jar artifacts
 *.jar
+
+# META-INF
+META-INF/
