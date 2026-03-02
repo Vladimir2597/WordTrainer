@@ -6,6 +6,6 @@ a mystery = детективная загадка / мистика = Somebody ge
 a docudrama = докудрама = A documentary made more interesting with some parts acted
 a disaster movie = фильм-катастрофа = Terrible things happen, but people survive
 a period drama / a costume drama = историческая драма / костюмированная драма = People dressed up in old-fashioned costumes
-a science fiction film (sci-fi) = научная фантастика = A story about the science of the future
+a science fiction film / sci-fi = научная фантастика = A story about the science of the future
 an action/adventure film = боевик / приключенческий фильм = Heroes chase and fight each other
 a crime film = криминальный фильм = The good guy (the detective) finds the bad guy (the criminal)
