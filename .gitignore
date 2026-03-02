@@ -6,6 +6,7 @@
 
 # Build directories
 /out/
+/src/out/
 /target/
 
 # Compiled class files
