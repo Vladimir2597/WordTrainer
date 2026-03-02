@@ -1,9 +1,0 @@
-Types of films=dictionary/typesOfFilms.txt
-TV Show Recommendations=dictionary/tvShowRecommendations.txt
-Halloween words=dictionary/halloween.txt
-My Notes=dictionary/myNotes.txt
-Irregular verbs=dictionary/irregularVerbs.txt
-Making Plans=dictionary/makingPlans.txt
-Idioms=dictionary/idioms.txt
-Opinion phrases=dictionary/opinionPhrases.txt
-Billionaire=dictionary/billionaire.txt
