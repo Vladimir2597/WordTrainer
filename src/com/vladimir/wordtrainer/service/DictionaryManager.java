@@ -11,7 +11,7 @@ import java.util.Map;
 public class DictionaryManager {
     private List<String> names;
     private List<String> paths;
-    private final static String RELATIVE_PATH = "src/com/vladimir/wordtrainer/data/";
+    private final static String RELATIVE_PATH = "com/vladimir/wordtrainer/data/";
 
     public DictionaryManager(String dictionaryFilmName){
         Map<String, String> map = FileUtil.loadDictionaries(RELATIVE_PATH + dictionaryFilmName);
