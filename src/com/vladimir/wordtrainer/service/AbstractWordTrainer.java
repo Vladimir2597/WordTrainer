@@ -22,7 +22,7 @@ public abstract class AbstractWordTrainer implements Trainer {
     @Override
     public void start() {
         System.out.println("=== Word Trainer ===");
-        System.out.println("Введите перевод слова. Для выхода напишите 'exit'.\n");
+        System.out.println("Введите перевод слова. 'back' — Назад к выбору словаря.\n");
 
         while (true) {
             System.out.println("Осталось слов: " + getCountUnusedWord() +
@@ -35,7 +35,7 @@ public abstract class AbstractWordTrainer implements Trainer {
 
                 String answer = scanner.nextLine().trim();
 
-                if (answer.equalsIgnoreCase("exit")) {
+                if (answer.equalsIgnoreCase("back")) {
                     System.out.println("До встречи!");
                     break;
                 }
@@ -51,13 +51,17 @@ public abstract class AbstractWordTrainer implements Trainer {
                 System.out.println("Что делаем:");
                 System.out.println("1 - Повторим слова, на которые ты ответил неправильно?");
                 System.out.println("2 - Повторим всё заново?");
+                System.out.println("'back' - Назад, для выбора другого раздела.");
 
-                int answer = Integer.parseInt(scanner.nextLine().trim());
+                String answer = scanner.nextLine().trim();
+
+                if (answer.equalsIgnoreCase("back")) break;
+
                 while (true) {
-                    if (answer == 1) {
+                    if (answer.equals("1")) {
                         usedWords = new ArrayList<>(correctWords);
                         break;
-                    } else if (answer == 2) {
+                    } else if (answer.equals("2")) {
                         usedWords.clear();
                         correctWords.clear();
                         break;

@@ -11,45 +11,56 @@ import java.util.Scanner;
 public class Main {
      static void main(String[] args) {
         DictionaryManager dictionaryManager = new DictionaryManager("dictionaries.txt");
-
-        dictionaryManager.printList();
-
         Scanner scanner = new Scanner(System.in);
-        System.out.print("\nВыберите номер словаря: ");
-        int index = scanner.nextInt() - 1;
 
-        Dictionary dictionary = dictionaryManager.loadDictionaryByIndex(index);
-        if (dictionary == null) {
-            System.out.println("⚠️ Неверный выбор.");
-            return;
-        }
+        while(true) {
+            dictionaryManager.printList();
+            System.out.print("\nВыберите номер словар. Для выхода напишите 'exit': ");
 
-        System.out.println("Вы выбрали: " + dictionary.getName());
+            String input = scanner.nextLine().trim();
+            if (input.equals("exit")) return;
 
-        System.out.println("\nДоступные варианты изучения слов:");
-        System.out.println("1 — По определению на английском");
-        System.out.println("2 — На основе русского слова");
-        System.out.print("\nВыберите вариант изучения слов: ");
-
-        Trainer trainer;
-
-        while (true) {
-            int choice = scanner.nextInt();
-            switch (choice) {
-                case 1:
-                    trainer = new DefinitionTrainer(dictionary);
-                    break;
-                case 2:
-                    trainer = new RusToEngTrainer(dictionary);
-                    break;
-                default:
-                    System.out.println("Такой команды нет");
-                    continue;
+            int index;
+            try {
+                index = Integer.parseInt(input) - 1;
+            } catch (NumberFormatException e) {
+                System.out.println("⚠️ Введите номер.");
+                continue;
             }
 
-            break;
-        }
+            Dictionary dictionary = dictionaryManager.loadDictionaryByIndex(index);
+            if (dictionary == null) {
+                System.out.println("⚠️ Неверный выбор.");
+                continue; // Снова к списку словарей
+            }
 
-        trainer.start();
+            Trainer trainer = null;
+            while (true) {
+                System.out.println("Вы выбрали: " + dictionary.getName());
+
+                System.out.println("\nДоступные варианты изучения слов:");
+                System.out.println("1 — По определению на английском");
+                System.out.println("2 — По слову на русском");
+                System.out.println("'back' — Назад к выбору словаря");
+                System.out.print("\nВыберите вариант изучения слов: ");
+
+                String mode = scanner.nextLine().trim();
+                if (mode.equals("back")) {
+                    break; // назад к внешнему while -> выбор словаря
+                }
+
+                switch (mode) {
+                    case "1" -> trainer = new DefinitionTrainer(dictionary);
+                    case "2" -> trainer = new RusToEngTrainer(dictionary);
+                    default -> {
+                        System.out.println("Такой команды нет");
+                        continue;
+                    }
+                }
+                break;
+            }
+
+            trainer.start();
+        }
     }
 }
