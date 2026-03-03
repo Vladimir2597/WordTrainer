@@ -10,3 +10,4 @@ Opinion phrases=dictionary/opinionPhrases.txt
 Billionaire=dictionary/billionaire.txt
 Back To My School=dictionary/backToMySchool.txt
 Emotions=dictionary/emotions.txt
+I have a problem=dictionary/iHaveAProblem.txt
