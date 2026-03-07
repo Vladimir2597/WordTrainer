@@ -5,109 +5,84 @@ import com.vladimir.wordtrainer.model.Word;
 import com.vladimir.wordtrainer.util.WordUtil;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Random;
-import java.util.Scanner;
 
 public abstract class AbstractWordTrainer implements Trainer {
-    private final Scanner scanner = new Scanner(System.in);
-    private List<Integer> correctWords = new ArrayList<>();
-    private List<Integer> usedWords = new ArrayList<>();
-    private Dictionary dictionary;
+    private final Dictionary dictionary;
+    private final List<Integer> shuffledIndices;
+    private int currentPosition = 0;
+    private final List<Integer> correctIndices = new ArrayList<>();
 
     public AbstractWordTrainer(Dictionary dictionary) {
         this.dictionary = dictionary;
+        this.shuffledIndices = new ArrayList<>();
+        for (int i = 0; i < dictionary.getCountWords(); i++) {
+            shuffledIndices.add(i);
+        }
+        Collections.shuffle(shuffledIndices);
     }
 
-    @Override
-    public void start() {
-        System.out.println("=== Word Trainer ===");
-        System.out.println("Введите перевод слова. 'back' — Назад к выбору словаря.\n");
+    public String getNextQuestion() {
+        if (isFinished()) return null;
+        Word word = dictionary.getWord(shuffledIndices.get(currentPosition));
+        return formatQuestion(word);
+    }
 
-        while (true) {
-            System.out.println("Осталось слов: " + getCountUnusedWord() +
-                    " из " + dictionary.getCountWords() + " слов.");
-            Integer wordIndex = getNewRandomWord();
+    public String handleAnswer(String answer) {
+        if (isFinished()) return null;
 
-            if (wordIndex != null) {
-                Word word = dictionary.getWord(wordIndex);
-                askQuestion(word);
+        int wordIndex = shuffledIndices.get(currentPosition);
+        Word word = dictionary.getWord(wordIndex);
 
-                String answer = scanner.nextLine().trim();
+        String response;
+        if (WordUtil.equalsIgnorePrepositions(answer, word.getEnglish())) {
+            correctIndices.add(wordIndex);
+            response = "✅ Правильно!";
+        } else {
+            response = "❌ Неправильно! Правильный ответ: " + word.getEnglish();
+        }
 
-                if (answer.equalsIgnoreCase("back")) {
-                    System.out.println("До встречи!");
-                    break;
-                }
+        currentPosition++;
+        return response;
+    }
 
-                if (isAnswerCorrect(answer, word)) correctWords.add(wordIndex);
+    public boolean isFinished() {
+        return currentPosition >= shuffledIndices.size();
+    }
 
-                if (getCountUnusedWord() == 0) {
-                    System.out.println("Поздравляю ты ответил: " + correctWords.size() +
-                            " из " + dictionary.getCountWords() + " слов.");
-                }
-            } else {
-                System.out.println("♻️ Все слова были использованы.");
-                System.out.println("Что делаем:");
-                System.out.println("1 - Повторим слова, на которые ты ответил неправильно?");
-                System.out.println("2 - Повторим всё заново?");
-                System.out.println("'back' - Назад, для выбора другого раздела.");
+    public String getProgressText() {
+        int remaining = shuffledIndices.size() - currentPosition;
+        return "Осталось слов: " + remaining + " из " + dictionary.getCountWords();
+    }
 
-                String answer = scanner.nextLine().trim();
+    public String getResultText() {
+        return "Результат: " + correctIndices.size() + " из " + dictionary.getCountWords() + " правильных ответов.";
+    }
 
-                if (answer.equalsIgnoreCase("back")) break;
-
-                while (true) {
-                    if (answer.equals("1")) {
-                        usedWords = new ArrayList<>(correctWords);
-                        break;
-                    } else if (answer.equals("2")) {
-                        usedWords.clear();
-                        correctWords.clear();
-                        break;
-                    } else {
-                        System.out.println("Нет такой команды, повторите ввод!");
-                    }
-                }
+    public void resetWithWrongOnly() {
+        List<Integer> wrongIndices = new ArrayList<>();
+        for (int idx : shuffledIndices) {
+            if (!correctIndices.contains(idx)) {
+                wrongIndices.add(idx);
             }
         }
+        shuffledIndices.clear();
+        shuffledIndices.addAll(wrongIndices);
+        Collections.shuffle(shuffledIndices);
+        currentPosition = 0;
+        correctIndices.clear();
     }
 
-    protected boolean isAnswerCorrect(String answer, Word word) {
-        boolean result;
-
-        if (WordUtil.equalsIgnorePrepositions(answer, word.getEnglish())) {
-            System.out.println("✅ Правильно!\n");
-            result = true;
-        } else {
-            System.out.println("❌ Неправильно! Правильный ответ: " + word.getEnglish() + "\n");
-            result = false;
+    public void resetAll() {
+        shuffledIndices.clear();
+        for (int i = 0; i < dictionary.getCountWords(); i++) {
+            shuffledIndices.add(i);
         }
-
-        return result;
+        Collections.shuffle(shuffledIndices);
+        currentPosition = 0;
+        correctIndices.clear();
     }
 
-    private Integer getNewRandomWord() {
-        if (!usedWords.isEmpty() && usedWords.size() == dictionary.getCountWords()) {
-            usedWords.clear();
-            return null;
-        }
-
-        Random random = new Random();
-        int unusedWordIndex;
-
-        do {
-            unusedWordIndex = random.nextInt(dictionary.getCountWords());
-        } while (usedWords.contains(unusedWordIndex));
-
-        usedWords.add(unusedWordIndex);
-
-        return unusedWordIndex;
-    }
-
-    public int getCountUnusedWord() {
-        return dictionary.getCountWords() - usedWords.size();
-    }
-
-    protected abstract void askQuestion(Word word);
+    protected abstract String formatQuestion(Word word);
 }

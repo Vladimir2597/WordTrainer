@@ -1,4 +1,3 @@
-
 package com.vladimir.wordtrainer.service;
 
 import com.vladimir.wordtrainer.model.Dictionary;
@@ -10,7 +9,7 @@ public class DefinitionTrainer extends AbstractWordTrainer {
     }
 
     @Override
-    protected void askQuestion(Word word) {
-        System.out.print(word.getEnglishDescription() + " → ");
+    protected String formatQuestion(Word word) {
+        return word.getEnglishDescription() + "\n\nВведите слово на английском:";
     }
 }

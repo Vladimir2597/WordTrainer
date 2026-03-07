@@ -20,16 +20,8 @@ public class DictionaryManager {
         paths = new ArrayList<>(map.values());
     }
 
-    public void printList(){
-        if(names.isEmpty()){
-            System.out.println("⚠️  Нет доступных словарей.");
-            return;
-        }
-
-        System.out.println("\n📚 Доступные словари:");
-        for(int i = 0; i < names.size(); i++){
-            System.out.println((i + 1) + " — " + names.get(i));
-        }
+    public List<String> getNames() {
+        return names;
     }
 
     public Dictionary loadDictionaryByIndex(int index) {
