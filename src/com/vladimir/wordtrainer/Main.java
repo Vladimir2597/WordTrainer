@@ -60,6 +60,11 @@ public class Main {
                 break;
             }
 
+            if (trainer == null) {
+                // значит нажали "0" и вышли назад
+                continue;
+            }
+
             trainer.start();
         }
     }
