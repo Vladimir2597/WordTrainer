@@ -112,7 +112,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
         if (trainer.isFinished()) {
             sendFinishMenu(chatId, result + "\n\n" + trainer.getResultText());
         } else {
-            sendText(chatId, result + "\n" + trainer.getProgressText());
+            sendText(chatId, result);
             sendNextQuestion(chatId, session);
         }
     }
