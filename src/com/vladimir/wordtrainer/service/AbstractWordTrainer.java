@@ -11,11 +11,13 @@ import java.util.List;
 public abstract class AbstractWordTrainer implements Trainer {
     private final Dictionary dictionary;
     private final List<Integer> shuffledIndices;
-    private int currentPosition = 0;
     private final List<Integer> correctIndices = new ArrayList<>();
+    private int currentPosition = 0;
+    private int numberRemainingWords;
 
     public AbstractWordTrainer(Dictionary dictionary) {
         this.dictionary = dictionary;
+        this.numberRemainingWords = dictionary.getCountWords();
         this.shuffledIndices = new ArrayList<>();
         for (int i = 0; i < dictionary.getCountWords(); i++) {
             shuffledIndices.add(i);
@@ -53,11 +55,11 @@ public abstract class AbstractWordTrainer implements Trainer {
 
     public String getProgressText() {
         int remaining = shuffledIndices.size() - currentPosition;
-        return "Осталось слов: " + remaining + " из " + dictionary.getCountWords();
+        return "Осталось слов: " + remaining + " из " + numberRemainingWords;
     }
 
     public String getResultText() {
-        return "Результат: " + correctIndices.size() + " из " + dictionary.getCountWords() + " правильных ответов.";
+        return "Результат: " + correctIndices.size() + " из " + numberRemainingWords + " правильных ответов.";
     }
 
     public void resetWithWrongOnly() {
@@ -71,6 +73,7 @@ public abstract class AbstractWordTrainer implements Trainer {
         shuffledIndices.addAll(wrongIndices);
         Collections.shuffle(shuffledIndices);
         currentPosition = 0;
+        numberRemainingWords = shuffledIndices.size();
         correctIndices.clear();
     }
 
@@ -81,6 +84,7 @@ public abstract class AbstractWordTrainer implements Trainer {
         }
         Collections.shuffle(shuffledIndices);
         currentPosition = 0;
+        numberRemainingWords = shuffledIndices.size();
         correctIndices.clear();
     }
 
