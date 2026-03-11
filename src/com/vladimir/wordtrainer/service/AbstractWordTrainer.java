@@ -88,5 +88,9 @@ public abstract class AbstractWordTrainer implements Trainer {
         correctIndices.clear();
     }
 
+    public boolean existsMoreWords() {
+        return correctIndices.size() < shuffledIndices.size();
+    }
+
     protected abstract String formatQuestion(Word word);
 }

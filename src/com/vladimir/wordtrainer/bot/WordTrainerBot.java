@@ -110,7 +110,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
         String result = trainer.handleAnswer(text);
 
         if (trainer.isFinished()) {
-            sendFinishMenu(chatId, result + "\n\n" + trainer.getResultText());
+            sendFinishMenu(session, chatId, result + "\n\n" + trainer.getResultText());
         } else {
             sendText(chatId, result);
             sendNextQuestion(chatId, session);
@@ -120,7 +120,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
     private void sendNextQuestion(long chatId, UserSession session) {
         String question = session.getTrainer().getNextQuestion();
         if (question == null) {
-            sendFinishMenu(chatId, session.getTrainer().getResultText());
+            sendFinishMenu(session, chatId, session.getTrainer().getResultText());
             return;
         }
         sendText(chatId, session.getTrainer().getProgressText() + "\n\n" + question);
@@ -148,18 +148,23 @@ public class WordTrainerBot extends TelegramLongPollingBot {
                 List.of(List.of(byDefinition), List.of(byRussian)));
     }
 
-    private void sendFinishMenu(long chatId, String text) {
-        InlineKeyboardButton retryWrong = new InlineKeyboardButton("Повторить неправильные");
-        retryWrong.setCallbackData("retry_wrong");
+    private void sendFinishMenu(UserSession session, long chatId, String text) {
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
 
+        if (session.getTrainer().existsMoreWords()) {
+            InlineKeyboardButton retryWrong = new InlineKeyboardButton("Повторить неправильные");
+            retryWrong.setCallbackData("retry_wrong");
+            keyboard.add(List.of(retryWrong));
+        }
         InlineKeyboardButton retryAll = new InlineKeyboardButton("Повторить всё заново");
         retryAll.setCallbackData("retry_all");
+        keyboard.add(List.of(retryAll));
 
         InlineKeyboardButton backToMenu = new InlineKeyboardButton("Выбрать другой словарь");
         backToMenu.setCallbackData("back_to_menu");
+        keyboard.add(List.of(backToMenu));
 
-        sendWithKeyboard(chatId, "♻️ " + text + "\n\nЧто делаем дальше?",
-                List.of(List.of(retryWrong), List.of(retryAll), List.of(backToMenu)));
+        sendWithKeyboard(chatId, "♻️ " + text + "\n\nЧто делаем дальше?", keyboard);
     }
 
     private void sendText(long chatId, String text) {
