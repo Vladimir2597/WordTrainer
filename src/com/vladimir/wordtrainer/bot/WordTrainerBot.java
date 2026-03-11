@@ -129,11 +129,13 @@ public class WordTrainerBot extends TelegramLongPollingBot {
     private void sendDictionaryList(long chatId) {
         List<String> names = dictionaryManager.getNames();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+
         for (int i = 0; i < names.size(); i++) {
             InlineKeyboardButton button = new InlineKeyboardButton(names.get(i));
             button.setCallbackData("dict:" + i);
             rows.add(List.of(button));
         }
+
         sendWithKeyboard(chatId, "📚 Выберите словарь:", rows);
     }
 
@@ -156,6 +158,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
             retryWrong.setCallbackData("retry_wrong");
             keyboard.add(List.of(retryWrong));
         }
+
         InlineKeyboardButton retryAll = new InlineKeyboardButton("Повторить всё заново");
         retryAll.setCallbackData("retry_all");
         keyboard.add(List.of(retryAll));
