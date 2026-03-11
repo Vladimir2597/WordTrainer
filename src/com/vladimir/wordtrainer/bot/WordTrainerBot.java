@@ -146,8 +146,11 @@ public class WordTrainerBot extends TelegramLongPollingBot {
         InlineKeyboardButton byRussian = new InlineKeyboardButton("По слову на русском");
         byRussian.setCallbackData("mode:russian");
 
+        InlineKeyboardButton backToMenu = new InlineKeyboardButton("Выбрать другой словарь");
+        backToMenu.setCallbackData("back_to_menu");
+
         sendWithKeyboard(chatId, "Вы выбрали: " + dictionaryName + "\n\nВыберите режим:",
-                List.of(List.of(byDefinition), List.of(byRussian)));
+                List.of(List.of(byDefinition), List.of(byRussian), List.of(backToMenu)));
     }
 
     private void sendFinishMenu(UserSession session, long chatId, String text) {
