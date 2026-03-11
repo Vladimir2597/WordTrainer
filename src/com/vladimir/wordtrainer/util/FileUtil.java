@@ -8,7 +8,12 @@ import java.util.*;
 public class FileUtil {
     private static List<String> readLines(String filePath) {
         List<String> lines = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+        InputStream stream = FileUtil.class.getClassLoader().getResourceAsStream(filePath);
+        if (stream == null) {
+            System.err.println("Файл не найден в classpath: " + filePath);
+            return lines;
+        }
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();

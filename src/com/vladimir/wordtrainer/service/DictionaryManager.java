@@ -11,7 +11,7 @@ import java.util.Map;
 public class DictionaryManager {
     private List<String> names;
     private List<String> paths;
-    private final static String RELATIVE_PATH = "src/com/vladimir/wordtrainer/data/";
+    private final static String RELATIVE_PATH = "com/vladimir/wordtrainer/data/";
 
     public DictionaryManager(String dictionaryFilmName){
         Map<String, String> map = FileUtil.loadDictionaries(RELATIVE_PATH + dictionaryFilmName);
@@ -20,16 +20,8 @@ public class DictionaryManager {
         paths = new ArrayList<>(map.values());
     }
 
-    public void printList(){
-        if(names.isEmpty()){
-            System.out.println("⚠️  Нет доступных словарей.");
-            return;
-        }
-
-        System.out.println("\n📚 Доступные словари:");
-        for(int i = 0; i < names.size(); i++){
-            System.out.println((i + 1) + " — " + names.get(i));
-        }
+    public List<String> getNames() {
+        return names;
     }
 
     public Dictionary loadDictionaryByIndex(int index) {

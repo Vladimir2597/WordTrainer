@@ -9,17 +9,18 @@ public class WordUtil {
     );
 
     private static String normalize(String input) {
-        StringTokenizer stringTokenizer = new StringTokenizer(input);
-
-        if (input == null || input == "") return "";
-        else if (stringTokenizer.countTokens() <= 1) return input.toLowerCase().trim();
-        else {
-            input = input.trim().toLowerCase();
-
-            return IGNORE_WORDS.contains(stringTokenizer.nextToken().toString()) ?
-                    input.substring(input.indexOf(' '), input.length()).trim() :
-                    input;
+        if (input == null || input.isBlank()) {
+            return "";
         }
+
+        String normalizedInput = input.replaceAll("[()]", "").trim().toLowerCase();
+        String[] wordPart = normalizedInput.split("\\s+", 2);
+
+        if (wordPart.length == 2 && IGNORE_WORDS.contains(wordPart[0])){
+            return wordPart[1];
+        }
+
+        return normalizedInput;
     }
 
     public static boolean equalsIgnorePrepositions(String s1, String s2) {
