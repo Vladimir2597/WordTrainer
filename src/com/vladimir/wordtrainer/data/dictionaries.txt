@@ -12,3 +12,4 @@ Back To My School=dictionary/backToMySchool.txt
 Emotions=dictionary/emotions.txt
 I have a problem=dictionary/iHaveAProblem.txt
 Gender-Related Terms=dictionary/genderRelatedTerms.txt
+test=dictionary/test.txt
