@@ -13,7 +13,7 @@ public class WordUtil {
             return "";
         }
 
-        String normalizedInput = input.trim().toLowerCase();
+        String normalizedInput = input.replaceAll("[()]", "").trim().toLowerCase();
         String[] wordPart = normalizedInput.split("\\s+", 2);
 
         if (wordPart.length == 2 && IGNORE_WORDS.contains(wordPart[0])){
