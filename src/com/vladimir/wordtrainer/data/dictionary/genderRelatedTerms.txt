@@ -6,3 +6,11 @@ misogyny = мизогиния / женоненавистничество = noun.
 misandry = мизандрия / мужененавистничество = noun. Dislike of or prejudice against men
 sexism = сексизм = noun. Prejudice or discrimination based on a person's sex
 identity = идентичность = noun. The distinguishing character, personality, or sense of self of an individual
+equality = равенство = the state of being equal, especially in rights, opportunities, and status
+on behalf of = от имени, в интересах = as a representative of someone or for the benefit of someone
+confined = ограниченный, заключённый в рамках = limited or restricted to a particular place, area, or activity
+compelled = вынужденный, принуждённый = forced or obliged to do something
+conducting = ведение, осуществление = carrying out or managing an activity, such as business or research
+permission = разрешение = official agreement or approval to do something
+barred = запрещённый, отстранённый = prevented or officially blocked from doing something
+restrictions = ограничения = rules or limits that control what someone is allowed to do
