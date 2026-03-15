@@ -1,8 +1,8 @@
-patriarchy = патриархат = A society or system in which men hold the primary power and leadership positions
-feminine = женственный / женский = Having qualities or characteristics traditionally associated with women
-masculine = мужественный / мужской = Having qualities or characteristics traditionally associated with men
-gender = гендер = The physical and/or social condition of being male or female
-misogyny = мизогиния / женоненавистничество = Dislike of or prejudice against women
-misandry = мизандрия / мужененавистничество = Dislike of or prejudice against men
-sexism = сексизм = Prejudice or discrimination based on a person’s sex
-identity = идентичность = The distinguishing character, personality, or sense of self of an individual
+patriarchy = патриархат = noun. A society or system in which men hold the primary power and leadership positions
+feminine = женственный / женский = adj. Having qualities or characteristics traditionally associated with women
+masculine = мужественный / мужской = adj. Having qualities or characteristics traditionally associated with men
+gender = гендер = noun. The physical and/or social condition of being male or female
+misogyny = мизогиния / женоненавистничество = noun. Dislike of or prejudice against women
+misandry = мизандрия / мужененавистничество = noun. Dislike of or prejudice against men
+sexism = сексизм = noun. Prejudice or discrimination based on a person's sex
+identity = идентичность = noun. The distinguishing character, personality, or sense of self of an individual

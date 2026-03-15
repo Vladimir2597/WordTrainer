@@ -1,30 +1,30 @@
-struggle=бороться=to make a strong effort
-make ends meet=сводить концы с концами=earn just enough money to live on
-justify=оправдывать=to show good reasons or cause for
-binge-watch=смотреть запоем=to watch several episodes of a television series or programme, one after another
-shy=застенчивый=nervous or timid in the company of other people
-cruel=жестокий=knowingly causing pain or distress to others
-middle-aged=средних лет=(of a person) aged about 45 to 65
-terminally ill=неизлечимо больной=condition which cannot be cured and is likely to lead to someone's death
-addictive=вызывающий привыкание=cannot stop once you have started
-action-packed=насыщенный событиями=full of activity or excitement
-character development=развитие персонажа=the emotional, physical or mental growth of a character in any show or book
-criminal=преступник=someone who commits a crime
-predictable=предсказуемый=something happens in a way or at a time that you know about before it happens
-overrated=переоценённый=rated or valued too highly
-entertaining=занимательный, развлекательный=providing amusement or enjoyment
-awesome=потрясающий=very good; giving a lot of pleasure
-terrible=ужасный=extremely bad
-average=средний=not very good, but not really bad
-caretaker=смотритель, сторож=a person employed to look after a building
-infamous=печально известный=well known for some bad quality or deed
-supernatural=сверхъестественный=attributed to some force beyond scientific understanding or the laws of nature
-creepy=жуткий, пугающий=strange or unnatural and making you feel frightened
-a ghost=привидение=the spirit of a dead person
-give someone goosebumps=вызывать мурашки=make someone scared or emotional
-distant=далёкий=far away in space or time
-soundtrack=саундтрек=the sounds, especially the music, of a film, or a separate recording of this
-is based on=основан на=used the other thing as the main idea for creating the story
-incredible=невероятный=impossible, or very difficult, to believe
-plot=сюжет=the story of a book, film, play, etc
-cast=актёрский состав=the actors in a film, play, or show
+struggle=бороться=verb. to make a strong effort
+make ends meet=сводить концы с концами=idiom. earn just enough money to live on
+justify=оправдывать=verb. to show good reasons or cause for
+binge-watch=смотреть запоем=verb. to watch several episodes of a television series or programme, one after another
+shy=застенчивый=adj. nervous or timid in the company of other people
+cruel=жестокий=adj. knowingly causing pain or distress to others
+middle-aged=средних лет=adj. (of a person) aged about 45 to 65
+terminally ill=неизлечимо больной=phrase. condition which cannot be cured and is likely to lead to someone's death
+addictive=вызывающий привыкание=adj. cannot stop once you have started
+action-packed=насыщенный событиями=adj. full of activity or excitement
+character development=развитие персонажа=noun. the emotional, physical or mental growth of a character in any show or book
+criminal=преступник=noun. someone who commits a crime
+predictable=предсказуемый=adj. something happens in a way or at a time that you know about before it happens
+overrated=переоценённый=adj. rated or valued too highly
+entertaining=занимательный, развлекательный=adj. providing amusement or enjoyment
+awesome=потрясающий=adj. very good; giving a lot of pleasure
+terrible=ужасный=adj. extremely bad
+average=средний=adj. not very good, but not really bad
+caretaker=смотритель, сторож=noun. a person employed to look after a building
+infamous=печально известный=adj. well known for some bad quality or deed
+supernatural=сверхъестественный=adj. attributed to some force beyond scientific understanding or the laws of nature
+creepy=жуткий, пугающий=adj. strange or unnatural and making you feel frightened
+a ghost=привидение=noun. the spirit of a dead person
+give someone goosebumps=вызывать мурашки=idiom. make someone scared or emotional
+distant=далёкий=adj. far away in space or time
+soundtrack=саундтрек=noun. the sounds, especially the music, of a film, or a separate recording of this
+is based on=основан на=phrase. used the other thing as the main idea for creating the story
+incredible=невероятный=adj. impossible, or very difficult, to believe
+plot=сюжет=noun. the story of a book, film, play, etc
+cast=актёрский состав=noun. the actors in a film, play, or show

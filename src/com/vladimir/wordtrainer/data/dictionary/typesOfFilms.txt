@@ -1,11 +1,11 @@
-a biopic = биографический фильм = Things that happen in the life of a real person
-a romantic comedy = романтическая комедия = Funny things happen. Two people fall in love
-a fantasy film = фэнтези = Strange things happen in an imaginary world
-a psychological thriller = психологический триллер = The main character has mental problems
-a mystery = детективная загадка / мистика = Somebody gets murdered and a detective tries to find out who did it, but it all seems really strange
-a docudrama = докудрама = A documentary made more interesting with some parts acted
-a disaster movie = фильм-катастрофа = Terrible things happen, but people survive
-a period drama / a costume drama = историческая драма / костюмированная драма = People dressed up in old-fashioned costumes
-a science fiction film / sci-fi = научная фантастика = A story about the science of the future
-an action/adventure film = боевик / приключенческий фильм = Heroes chase and fight each other
-a crime film = криминальный фильм = The good guy (the detective) finds the bad guy (the criminal)
+a biopic = биографический фильм = noun. Things that happen in the life of a real person
+a romantic comedy = романтическая комедия = noun. Funny things happen. Two people fall in love
+a fantasy film = фэнтези = noun. Strange things happen in an imaginary world
+a psychological thriller = психологический триллер = noun. The main character has mental problems
+a mystery = детективная загадка / мистика = noun. Somebody gets murdered and a detective tries to find out who did it, but it all seems really strange
+a docudrama = докудрама = noun. A documentary made more interesting with some parts acted
+a disaster movie = фильм-катастрофа = noun. Terrible things happen, but people survive
+a period drama / a costume drama = историческая драма / костюмированная драма = noun. People dressed up in old-fashioned costumes
+a science fiction film / sci-fi = научная фантастика = noun. A story about the science of the future
+an action/adventure film = боевик / приключенческий фильм = noun. Heroes chase and fight each other
+a crime film = криминальный фильм = noun. The good guy (the detective) finds the bad guy (the criminal)
