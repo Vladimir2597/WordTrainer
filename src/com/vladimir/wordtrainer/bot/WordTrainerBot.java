@@ -8,8 +8,10 @@ import com.vladimir.wordtrainer.service.RusToEngTrainer;
 import com.vladimir.wordtrainer.session.AppState;
 import com.vladimir.wordtrainer.session.UserSession;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -28,6 +30,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
         super(botToken);
         this.botUsername = botUsername;
         this.dictionaryManager = dictionaryManager;
+        registerBotCommands();
     }
 
     @Override
@@ -50,10 +53,32 @@ public class WordTrainerBot extends TelegramLongPollingBot {
         }
     }
 
+    private void registerBotCommands(){
+        SetMyCommands setMyCommands = new SetMyCommands();
+        List<BotCommand> commands = List.of(
+                new BotCommand("/dictionary", "Выбрать словарь"),
+                new BotCommand("/mode", "Сменить режим обучения")
+        );
+        setMyCommands.setCommands(commands);
+
+        try {
+            execute(setMyCommands);
+        } catch (TelegramApiException e){
+            System.err.println("Ошибка регистрации команд: " + e.getMessage());
+
+        }
+    }
+
     private void handleMessage(long chatId, String text, UserSession session) {
         if (text.equals("/start")) {
             session.setState(AppState.CHOOSING_DICTIONARY);
             sendDictionaryList(chatId);
+            return;
+        } else if(text.equals("/dictionary")){
+            handleDictionaryCommand(chatId, session);
+            return;
+        } else if(text.equals("/mode")){
+            handleModeCommand(chatId, session);
             return;
         }
 
@@ -61,6 +86,29 @@ public class WordTrainerBot extends TelegramLongPollingBot {
             case CHOOSING_DICTIONARY -> sendDictionaryList(chatId);
             case CHOOSING_MODE -> sendModeSelection(chatId, session.getDictionary().getName());
             case TRAINING -> handleTrainingAnswer(chatId, text, session);
+        }
+    }
+
+    private void handleDictionaryCommand(long chatId, UserSession session) {
+        if( session.getState() == AppState.TRAINING ){
+            session.setState(AppState.CHOOSING_DICTIONARY);
+            session.setTrainer(null);
+        }
+
+        sendDictionaryList(chatId);
+    }
+
+    private void handleModeCommand(long chatId, UserSession session) {
+        if (session.getState() == AppState.TRAINING){
+            session.setState(AppState.CHOOSING_MODE);
+            session.setTrainer(null);
+        }
+
+        if (session.getDictionary() == null){
+            sendText(chatId, "Сначала выберите словарь.");
+            sendDictionaryList(chatId);
+        } else {
+            sendModeSelection(chatId, session.getDictionary().getName());
         }
     }
 
