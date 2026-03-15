@@ -1,0 +1,4 @@
+# Test dictionaries config
+Dict One=dictionary/one.txt
+Dict Two=dictionary/two.txt
+invalid_line_without_equals

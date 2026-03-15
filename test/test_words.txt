@@ -1,0 +1,4 @@
+# Test words file
+run=бежать=(v.) to move quickly on foot
+jump=прыгать=(v.) to leap into the air
+invalid_line_no_separators
