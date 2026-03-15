@@ -1,14 +1,14 @@
-to break down = сломаться / выйти из строя = (about a machine/device) to stop working properly
-to need recharging = нуждаться в зарядке = to have a low battery and need electrical power
-out of order = не работает / неисправен = not working correctly (often used on signs about machines)
-to need fixing = нуждаться в ремонте = to need to be repaired
-no reception = нет сети / нет сигнала = no mobile signal available (so the phone can’t connect to the network)
-to switch it off and on again = выключить (и включить снова) = to turn a device off and then on again to try to fix it
-to keep making (a noise) = постоянно издавать (звук) = to repeatedly produce a sound again and again
-to crash = вылететь / аварийно завершиться = (about software) to stop working suddenly
-to freeze = зависнуть = (about a device/program) to stop responding
-not to work any more = больше не работает = to stop functioning (after working before)
-to sort it out = разобраться / решить проблему = to fix a problem by dealing with it and finding a solution
-to save (a file) onto a memory stick = сохранить (файл) на флешку = to copy a file to a USB flash drive
-to print something = распечатать (что-то) = to produce a paper copy using a printer
-would you mind = не могли бы вы / вы не против = a polite way to ask someone to do something (often used with -ing or if + past tense)
+to break down = сломаться / выйти из строя = phr.v. (about a machine/device) to stop working properly
+to need recharging = нуждаться в зарядке = phr.v. to have a low battery and need electrical power
+out of order = не работает / неисправен = phrase. not working correctly (often used on signs about machines)
+to need fixing = нуждаться в ремонте = phr.v. to need to be repaired
+no reception = нет сети / нет сигнала = noun. no mobile signal available (so the phone can't connect to the network)
+to switch it off and on again = выключить (и включить снова) = phr.v. to turn a device off and then on again to try to fix it
+to keep making (a noise) = постоянно издавать (звук) = phr.v. to repeatedly produce a sound again and again
+to crash = вылететь / аварийно завершиться = verb. (about software) to stop working suddenly
+to freeze = зависнуть = verb. (about a device/program) to stop responding
+not to work any more = больше не работает = phrase. to stop functioning (after working before)
+to sort it out = разобраться / решить проблему = phr.v. to fix a problem by dealing with it and finding a solution
+to save (a file) onto a memory stick = сохранить (файл) на флешку = phr.v. to copy a file to a USB flash drive
+to print something = распечатать (что-то) = phr.v. to produce a paper copy using a printer
+would you mind = не могли бы вы / вы не против = phrase. a polite way to ask someone to do something (often used with -ing or if + past tense)

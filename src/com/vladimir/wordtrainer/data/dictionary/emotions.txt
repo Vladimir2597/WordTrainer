@@ -1,13 +1,13 @@
-envious = завистливый = feeling unhappy because someone else has something you want
-confused = растерянный / сбитый с толку = unable to understand something clearly or to think clearly
-anxious = тревожный = feeling worried or nervous about something that might happen
-disappointed = разочарованный = feeling sad because something was not as good as you hoped or expected
-cross = сердитый / раздражённый = slightly angry or annoyed
-upset/sad = расстроенный = feeling unhappy, worried, or emotionally hurt
-excited/delighted = взволнованный / воодушевлённый = feeling very happy and eager about something
-bored = скучающий = not interested because nothing is happening or something is not enjoyable
-frightened/shocked/terrified = напуганный = feeling fear; scared
-embarrassed/ashamed = смущённый = feeling uncomfortable because you think you look silly or made a mistake
-proud = гордый = feeling pleased and satisfied about your achievements or someone you care about
-relieved = облегченный = feeling happy because something unpleasant did not happen or has ended
-suspicious = подозрительный = feeling that something is wrong or that someone is not honest
+envious = завистливый = adj. feeling unhappy because someone else has something you want
+confused = растерянный / сбитый с толку = adj. unable to understand something clearly or to think clearly
+anxious = тревожный = adj. feeling worried or nervous about something that might happen
+disappointed = разочарованный = adj. feeling sad because something was not as good as you hoped or expected
+cross = сердитый / раздражённый = adj. slightly angry or annoyed
+upset/sad = расстроенный = adj. feeling unhappy, worried, or emotionally hurt
+excited/delighted = взволнованный / воодушевлённый = adj. feeling very happy and eager about something
+bored = скучающий = adj. not interested because nothing is happening or something is not enjoyable
+frightened/shocked/terrified = напуганный = adj. feeling fear; scared
+embarrassed/ashamed = смущённый = adj. feeling uncomfortable because you think you look silly or made a mistake
+proud = гордый = adj. feeling pleased and satisfied about your achievements or someone you care about
+relieved = облегченный = adj. feeling happy because something unpleasant did not happen or has ended
+suspicious = подозрительный = adj. feeling that something is wrong or that someone is not honest
