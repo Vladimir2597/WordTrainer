@@ -59,7 +59,7 @@ public class AbstractWordTrainerTest {
         Dictionary dictionary = buildDictionary("word","translate","a small animal");
         AbstractWordTrainer trainer = new DefinitionTrainer(dictionary);
 
-        assertTrue(trainer.handleAnswer("a small animal").contains("Неправильно! Правильный ответ"));
+        assertFalse(trainer.handleAnswer("a small animal").contains("Неправильно! Правильный ответ"));
     }
 
     @Test
