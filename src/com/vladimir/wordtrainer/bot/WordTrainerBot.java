@@ -1,10 +1,8 @@
 package com.vladimir.wordtrainer.bot;
 
 import com.vladimir.wordtrainer.model.Dictionary;
-import com.vladimir.wordtrainer.service.AbstractWordTrainer;
-import com.vladimir.wordtrainer.service.DefinitionTrainer;
-import com.vladimir.wordtrainer.service.DictionaryManager;
-import com.vladimir.wordtrainer.service.RusToEngTrainer;
+import com.vladimir.wordtrainer.model.Word;
+import com.vladimir.wordtrainer.service.*;
 import com.vladimir.wordtrainer.session.AppState;
 import com.vladimir.wordtrainer.session.UserSession;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -15,7 +13,12 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
+import org.telegram.telegrambots.meta.api.objects.InputFile;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,12 +27,14 @@ import java.util.Map;
 public class WordTrainerBot extends TelegramLongPollingBot {
     private final String botUsername;
     private final DictionaryManager dictionaryManager;
+    private final AudioService audioService;
     private final Map<Long, UserSession> sessions = new HashMap<>();
 
-    public WordTrainerBot(String botToken, String botUsername, DictionaryManager dictionaryManager) {
+    public WordTrainerBot(String botToken, String botUsername, DictionaryManager dictionaryManager, AudioService audioService) {
         super(botToken);
         this.botUsername = botUsername;
         this.dictionaryManager = dictionaryManager;
+        this.audioService = audioService;
         registerBotCommands();
     }
 
@@ -144,6 +149,21 @@ public class WordTrainerBot extends TelegramLongPollingBot {
         } else if (data.equals("back_to_menu")) {
             session.setState(AppState.CHOOSING_DICTIONARY);
             sendDictionaryList(chatId);
+        } else if (data.startsWith("listen")) {
+            String word = data.substring("listen".length());
+            File audio = audioService.getAudio(word);
+            if (audio != null) {
+                try {
+                    SendAudio sendAudio = new SendAudio();
+                    sendAudio.setChatId(String.valueOf(chatId));
+                    sendAudio.setAudio(new InputFile(audio));
+                    execute(sendAudio);
+                } catch (TelegramApiException e) {
+                    System.err.println("Ошибка отправки аудио: " + e.getMessage());
+                }
+            } else {
+                sendText(chatId, "Не удалось загрузить аудио");
+            }
         }
     }
 
@@ -155,12 +175,14 @@ public class WordTrainerBot extends TelegramLongPollingBot {
         }
 
         AbstractWordTrainer trainer = session.getTrainer();
+
+        Word currentWord = trainer.getCurrentWord();
         String result = trainer.handleAnswer(text);
 
         if (trainer.isFinished()) {
             sendFinishMenu(session, chatId, result + "\n\n" + trainer.getResultText());
         } else {
-            sendText(chatId, result);
+            sendWithListenButton(chatId, result, currentWord.getEnglish());
             sendNextQuestion(chatId, session);
         }
     }
@@ -227,6 +249,12 @@ public class WordTrainerBot extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             System.err.println("Ошибка отправки: " + e.getMessage());
         }
+    }
+
+    private void sendWithListenButton(long chatId, String text, String word) {
+        InlineKeyboardButton btn = new InlineKeyboardButton("🔊 Произнести слово");
+        btn.setCallbackData("listen" + word);
+        sendWithKeyboard(chatId, text, List.of(List.of(btn)));
     }
 
     private void sendWithKeyboard(long chatId, String text, List<List<InlineKeyboardButton>> rows) {

@@ -8,6 +8,7 @@
 /out/
 /src/out/
 /target/
+/audio/
 
 # Compiled class files
 *.class
