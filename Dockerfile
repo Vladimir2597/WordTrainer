@@ -13,5 +13,6 @@ COPY --from=build /app/target/wordtrainer-1.0-SNAPSHOT.jar app.jar
 
 ENV BOT_TOKEN=""
 ENV BOT_USERNAME=""
+ENV VOICERSS_KEY=""
 
 CMD ["java", "-jar", "app.jar"]
