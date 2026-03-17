@@ -1,5 +1,10 @@
 package com.vladimir.wordtrainer.service;
 
+import ws.schild.jave.Encoder;
+import ws.schild.jave.MultimediaObject;
+import ws.schild.jave.encode.AudioAttributes;
+import ws.schild.jave.encode.EncodingAttributes;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -23,11 +28,11 @@ public class AudioService {
         File dir = new File(audioDir);
         dir.mkdirs();
 
-        String wordFileName = word.replace(" ", "_").toLowerCase() + ".mp3";
-        File file = new File(dir, wordFileName);
+        String baseName = word.replace(" ", "_").toLowerCase();
+        File oggFile = new File(dir, baseName + ".ogg");
 
-        if (file.exists()) {
-            return file;
+        if (oggFile.exists()) {
+            return oggFile;
         }
 
         HttpClient client = HttpClient.newHttpClient();
@@ -51,8 +56,13 @@ public class AudioService {
                 return null;
             }
 
-            Files.write(file.toPath(), response.body());
-            return file;
+            File mp3File = new File(dir, baseName + ".mp3");
+            Files.write(mp3File.toPath(), response.body());
+
+            boolean converted = convertToOpusOgg(mp3File, oggFile);
+            mp3File.delete();
+
+            return converted ? oggFile : null;
 
         } catch (IOException e) {
             System.err.println("Ошибка запроса к VoiceRSS: " + e.getMessage());
@@ -60,6 +70,27 @@ public class AudioService {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return null;
+        }
+    }
+
+    private boolean convertToOpusOgg(File input, File output) {
+        try {
+            AudioAttributes audio = new AudioAttributes();
+            audio.setCodec("libopus");
+            audio.setBitRate(64000);
+            audio.setSamplingRate(16000);
+            audio.setChannels(1);
+
+            EncodingAttributes attrs = new EncodingAttributes();
+            attrs.setOutputFormat("ogg");
+            attrs.setAudioAttributes(audio);
+
+            Encoder encoder = new Encoder();
+            encoder.encode(new MultimediaObject(input), output, attrs);
+            return true;
+        } catch (Exception e) {
+            System.err.println("Ошибка конвертации: " + e.getMessage());
+            return false;
         }
     }
 }
