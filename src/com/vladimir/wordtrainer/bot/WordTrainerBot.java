@@ -13,9 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
-import org.telegram.telegrambots.meta.api.objects.InputFile;
-import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
+import org.telegram.telegrambots.meta.api.methods.send.SendVoice;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 
 import java.io.File;
@@ -70,7 +68,6 @@ public class WordTrainerBot extends TelegramLongPollingBot {
             execute(setMyCommands);
         } catch (TelegramApiException e){
             System.err.println("Ошибка регистрации команд: " + e.getMessage());
-
         }
     }
 
@@ -118,15 +115,15 @@ public class WordTrainerBot extends TelegramLongPollingBot {
     }
 
     private void handleCallback(long chatId, String data, UserSession session) {
-        if (data.startsWith("dict:")) {
-            int index = Integer.parseInt(data.substring(5));
+        if (data.startsWith(Callbacks.DICT_PREFIX)) {
+            int index = Integer.parseInt(data.substring(Callbacks.DICT_PREFIX.length()));
             Dictionary dictionary = dictionaryManager.loadDictionaryByIndex(index);
             session.setDictionary(dictionary);
             session.setState(AppState.CHOOSING_MODE);
             sendModeSelection(chatId, dictionary.getName());
 
-        } else if (data.startsWith("mode:")) {
-            String mode = data.substring(5);
+        } else if (data.startsWith(Callbacks.MODE_PREFIX)) {
+            String mode = data.substring(Callbacks.MODE_PREFIX.length());
             AbstractWordTrainer trainer = switch (mode) {
                 case "definition" -> new DefinitionTrainer(session.getDictionary());
                 case "russian" -> new RusToEngTrainer(session.getDictionary());
@@ -138,26 +135,26 @@ public class WordTrainerBot extends TelegramLongPollingBot {
             session.setState(AppState.TRAINING);
             sendNextQuestion(chatId, session);
 
-        } else if (data.equals("retry_wrong")) {
+        } else if (data.equals(Callbacks.RETRY_WRONG)) {
             session.getTrainer().resetWithWrongOnly();
             sendNextQuestion(chatId, session);
 
-        } else if (data.equals("retry_all")) {
+        } else if (data.equals(Callbacks.RETRY_ALL)) {
             session.getTrainer().resetAll();
             sendNextQuestion(chatId, session);
 
-        } else if (data.equals("back_to_menu")) {
+        } else if (data.equals(Callbacks.BACK_TO_MENU)) {
             session.setState(AppState.CHOOSING_DICTIONARY);
             sendDictionaryList(chatId);
-        } else if (data.startsWith("listen")) {
-            String word = data.substring("listen".length());
+        } else if (data.startsWith(Callbacks.LISTEN_PREFIX)) {
+            String word = data.substring(Callbacks.LISTEN_PREFIX.length());
             File audio = audioService.getAudio(word);
             if (audio != null) {
                 try {
-                    SendAudio sendAudio = new SendAudio();
-                    sendAudio.setChatId(String.valueOf(chatId));
-                    sendAudio.setAudio(new InputFile(audio));
-                    execute(sendAudio);
+                    SendVoice sendVoice = new SendVoice();
+                    sendVoice.setChatId(String.valueOf(chatId));
+                    sendVoice.setVoice(new InputFile(audio));
+                    execute(sendVoice);
                 } catch (TelegramApiException e) {
                     System.err.println("Ошибка отправки аудио: " + e.getMessage());
                 }
@@ -202,7 +199,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
 
         for (int i = 0; i < names.size(); i++) {
             InlineKeyboardButton button = new InlineKeyboardButton(names.get(i));
-            button.setCallbackData("dict:" + i);
+            button.setCallbackData(Callbacks.DICT_PREFIX + i);
             rows.add(List.of(button));
         }
 
@@ -211,13 +208,13 @@ public class WordTrainerBot extends TelegramLongPollingBot {
 
     private void sendModeSelection(long chatId, String dictionaryName) {
         InlineKeyboardButton byDefinition = new InlineKeyboardButton("По определению на английском");
-        byDefinition.setCallbackData("mode:definition");
+        byDefinition.setCallbackData(Callbacks.MODE_PREFIX + "definition");
 
         InlineKeyboardButton byRussian = new InlineKeyboardButton("По слову на русском");
-        byRussian.setCallbackData("mode:russian");
+        byRussian.setCallbackData(Callbacks.MODE_PREFIX + "russian");
 
         InlineKeyboardButton backToMenu = new InlineKeyboardButton("Выбрать другой словарь");
-        backToMenu.setCallbackData("back_to_menu");
+        backToMenu.setCallbackData(Callbacks.BACK_TO_MENU);
 
         sendWithKeyboard(chatId, "Вы выбрали: " + dictionaryName + "\n\nВыберите режим:",
                 List.of(List.of(byDefinition), List.of(byRussian), List.of(backToMenu)));
@@ -228,16 +225,16 @@ public class WordTrainerBot extends TelegramLongPollingBot {
 
         if (session.getTrainer().existsMoreWords()) {
             InlineKeyboardButton retryWrong = new InlineKeyboardButton("Повторить неправильные");
-            retryWrong.setCallbackData("retry_wrong");
+            retryWrong.setCallbackData(Callbacks.RETRY_WRONG);
             keyboard.add(List.of(retryWrong));
         }
 
         InlineKeyboardButton retryAll = new InlineKeyboardButton("Повторить всё заново");
-        retryAll.setCallbackData("retry_all");
+        retryAll.setCallbackData(Callbacks.RETRY_ALL);
         keyboard.add(List.of(retryAll));
 
         InlineKeyboardButton backToMenu = new InlineKeyboardButton("Выбрать другой словарь");
-        backToMenu.setCallbackData("back_to_menu");
+        backToMenu.setCallbackData(Callbacks.BACK_TO_MENU);
         keyboard.add(List.of(backToMenu));
 
         sendWithKeyboard(chatId, "♻️ " + text + "\n\nЧто делаем дальше?", keyboard);
@@ -253,7 +250,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
 
     private void sendWithListenButton(long chatId, String text, String word) {
         InlineKeyboardButton btn = new InlineKeyboardButton("🔊 Произнести слово");
-        btn.setCallbackData("listen" + word);
+        btn.setCallbackData(Callbacks.LISTEN_PREFIX + word);
         sendWithKeyboard(chatId, text, List.of(List.of(btn)));
     }
 

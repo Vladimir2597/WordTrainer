@@ -22,7 +22,7 @@ public class AudioService {
     public File getAudio(String word) {
         new File(audioDir).mkdirs();
 
-        String wordFileName = word.replace(" ", "_").toLowerCase() + ".mp3";
+        String wordFileName = word.replace(" ", "_").toLowerCase() + ".ogg";
         File file = new File(audioDir + "/" + wordFileName);
 
         if (file.exists()) {
@@ -34,7 +34,7 @@ public class AudioService {
         String encodedWord = URLEncoder.encode(word, StandardCharsets.UTF_8);
         String url = "http://api.voicerss.org/?key=" + apiKey
                 + "&hl=en-gb&src=" + encodedWord
-                + "&c=MP3&f=16khz_16bit_mono";
+                + "&c=OGG&f=16khz_16bit_mono";
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
