@@ -13,7 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.api.methods.send.SendVoice;
+import org.telegram.telegrambots.meta.api.methods.send.SendAudio;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 
 import java.io.File;
@@ -151,10 +151,10 @@ public class WordTrainerBot extends TelegramLongPollingBot {
             File audio = audioService.getAudio(word);
             if (audio != null) {
                 try {
-                    SendVoice sendVoice = new SendVoice();
-                    sendVoice.setChatId(String.valueOf(chatId));
-                    sendVoice.setVoice(new InputFile(audio));
-                    execute(sendVoice);
+                    SendAudio sendAudio = new SendAudio();
+                    sendAudio.setChatId(String.valueOf(chatId));
+                    sendAudio.setAudio(new InputFile(audio));
+                    execute(sendAudio);
                 } catch (TelegramApiException e) {
                     System.err.println("Ошибка отправки аудио: " + e.getMessage());
                 }
