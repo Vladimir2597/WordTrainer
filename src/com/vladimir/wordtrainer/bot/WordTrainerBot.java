@@ -67,7 +67,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
         }
     }
 
-    private void registerBotCommands(){
+    private void registerBotCommands() {
         SetMyCommands setMyCommands = new SetMyCommands();
         List<BotCommand> commands = List.of(
                 new BotCommand("/dictionary", "Выбрать словарь"),
@@ -77,7 +77,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
 
         try {
             execute(setMyCommands);
-        } catch (TelegramApiException e){
+        } catch (TelegramApiException e) {
             System.err.println("Ошибка регистрации команд: " + e.getMessage());
         }
     }
@@ -87,10 +87,10 @@ public class WordTrainerBot extends TelegramLongPollingBot {
             session.setState(AppState.CHOOSING_DICTIONARY);
             sendDictionaryList(chatId);
             return;
-        } else if(text.equals("/dictionary")){
+        } else if (text.equals("/dictionary")) {
             handleDictionaryCommand(chatId, session);
             return;
-        } else if(text.equals("/mode")){
+        } else if (text.equals("/mode")) {
             handleModeCommand(chatId, session);
             return;
         }
@@ -103,7 +103,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
     }
 
     private void handleDictionaryCommand(long chatId, UserSession session) {
-        if( session.getState() == AppState.TRAINING ){
+        if (session.getState() == AppState.TRAINING) {
             session.setState(AppState.CHOOSING_DICTIONARY);
             session.setTrainer(null);
         }
@@ -112,12 +112,12 @@ public class WordTrainerBot extends TelegramLongPollingBot {
     }
 
     private void handleModeCommand(long chatId, UserSession session) {
-        if (session.getState() == AppState.TRAINING){
+        if (session.getState() == AppState.TRAINING) {
             session.setState(AppState.CHOOSING_MODE);
             session.setTrainer(null);
         }
 
-        if (session.getDictionary() == null){
+        if (session.getDictionary() == null) {
             sendText(chatId, "Сначала выберите словарь.");
             sendDictionaryList(chatId);
         } else {
@@ -157,6 +157,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
         } else if (data.equals(Callbacks.BACK_TO_MENU)) {
             session.setState(AppState.CHOOSING_DICTIONARY);
             sendDictionaryList(chatId);
+
         } else if (data.startsWith(Callbacks.LISTEN_PREFIX)) {
             String word = data.substring(Callbacks.LISTEN_PREFIX.length());
             File audio = audioService.getAudio(word);

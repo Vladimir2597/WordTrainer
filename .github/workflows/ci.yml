@@ -21,3 +21,5 @@ jobs:
 
       - name: Run unit tests
         run: mvn test
+        env:
+          VOICERSS_KEY: ${{ secrets.VOICERSS_KEY }}
