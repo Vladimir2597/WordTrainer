@@ -1,23 +1,27 @@
 package com.vladimir.wordtrainer.service;
 
+import com.vladimir.wordtrainer.db.DictionaryRepository;
 import com.vladimir.wordtrainer.model.Dictionary;
 import com.vladimir.wordtrainer.model.Word;
-import com.vladimir.wordtrainer.util.FileUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class DictionaryManager {
+    private final DictionaryRepository dictionaryRepository;
+    private List<Long> ids;
     private List<String> names;
-    private List<String> paths;
-    private final static String RELATIVE_PATH = "com/vladimir/wordtrainer/data/";
 
-    public DictionaryManager(String dictionaryFilmName){
-        Map<String, String> map = FileUtil.loadDictionaries(RELATIVE_PATH + dictionaryFilmName);
+    public DictionaryManager(DictionaryRepository dictionaryRepository) {
+        this.dictionaryRepository = dictionaryRepository;
+        reload();
+    }
 
-        names = new ArrayList<>(map.keySet());
-        paths = new ArrayList<>(map.values());
+    private void reload() {
+        Map<Long, String> map = dictionaryRepository.getAllDictionaries();
+        ids = new ArrayList<>(map.keySet());
+        names = new ArrayList<>(map.values());
     }
 
     public List<String> getNames() {
@@ -25,11 +29,9 @@ public class DictionaryManager {
     }
 
     public Dictionary loadDictionaryByIndex(int index) {
+        long dictionaryId = ids.get(index);
         String name = names.get(index);
-        String path = paths.get(index);
-
-        List<Word> words = FileUtil.loadWords(RELATIVE_PATH + path);
-
+        List<Word> words = dictionaryRepository.getWordsByDictionaryId(dictionaryId);
         return new Dictionary(words, name);
     }
 }

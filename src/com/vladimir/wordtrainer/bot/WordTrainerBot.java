@@ -1,11 +1,15 @@
 package com.vladimir.wordtrainer.bot;
 
+import com.vladimir.wordtrainer.db.DictionaryRepository;
+import com.vladimir.wordtrainer.db.UserRepository;
 import com.vladimir.wordtrainer.model.Dictionary;
 import com.vladimir.wordtrainer.model.Word;
 import com.vladimir.wordtrainer.service.*;
 import com.vladimir.wordtrainer.session.AppState;
 import com.vladimir.wordtrainer.session.UserSession;
+import com.vladimir.wordtrainer.util.FileUtil;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -26,13 +30,22 @@ public class WordTrainerBot extends TelegramLongPollingBot {
     private final String botUsername;
     private final DictionaryManager dictionaryManager;
     private final AudioService audioService;
+    private final UserRepository userRepository;
+    private final DictionaryRepository dictionaryRepository;
     private final Map<Long, UserSession> sessions = new HashMap<>();
 
-    public WordTrainerBot(String botToken, String botUsername, DictionaryManager dictionaryManager, AudioService audioService) {
+    public WordTrainerBot(String botToken,
+                          String botUsername,
+                          DictionaryManager dictionaryManager,
+                          AudioService audioService,
+                          UserRepository userRepository,
+                          DictionaryRepository dictionaryRepository) {
         super(botToken);
         this.botUsername = botUsername;
         this.dictionaryManager = dictionaryManager;
         this.audioService = audioService;
+        this.userRepository = userRepository;
+        this.dictionaryRepository = dictionaryRepository;
         registerBotCommands();
     }
 
@@ -44,19 +57,43 @@ public class WordTrainerBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
+            org.telegram.telegrambots.meta.api.objects.User from = update.getMessage().getFrom();
+            userRepository.saveUserIfNotExists(from.getId(), from.getUserName(), from.getFirstName(), from.getLastName());
             long chatId = update.getMessage().getChatId();
             String text = update.getMessage().getText().trim();
             UserSession session = sessions.computeIfAbsent(chatId, id -> new UserSession());
             handleMessage(chatId, text, session);
         } else if (update.hasCallbackQuery()) {
+            org.telegram.telegrambots.meta.api.objects.User from = update.getCallbackQuery().getFrom();
+            userRepository.saveUserIfNotExists(from.getId(), from.getUserName(), from.getFirstName(), from.getLastName());
             long chatId = update.getCallbackQuery().getMessage().getChatId();
             String data = update.getCallbackQuery().getData();
             UserSession session = sessions.computeIfAbsent(chatId, id -> new UserSession());
             handleCallback(chatId, data, session);
+        } else if (update.getMessage().hasDocument()){
+            long chatId = update.getMessage().getChatId();
+            UserSession session = sessions.computeIfAbsent(chatId, id -> new UserSession());
+            if (session.getState() == AppState.UPLOADING_DICTIONARY) {
+                String fileId = update.getMessage().getDocument().getFileId();
+                try {
+                    File file = downloadFile(execute(new GetFile(fileId)));
+
+                    String name = FileUtil.loadDictionaryName(file);
+                    List<Word> words = FileUtil.loadWordsFromFile(file);
+
+                    long dictionaryId = dictionaryRepository.saveDictionary(name);
+                    dictionaryRepository.saveWord(dictionaryId, words);
+
+                    sendText(chatId, "Словарь \"" + name + "\" загружен! " + words.size() + " слов.");
+                    session.setState(AppState.CHOOSING_DICTIONARY);
+                } catch (TelegramApiException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
-    private void registerBotCommands(){
+    private void registerBotCommands() {
         SetMyCommands setMyCommands = new SetMyCommands();
         List<BotCommand> commands = List.of(
                 new BotCommand("/dictionary", "Выбрать словарь"),
@@ -66,7 +103,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
 
         try {
             execute(setMyCommands);
-        } catch (TelegramApiException e){
+        } catch (TelegramApiException e) {
             System.err.println("Ошибка регистрации команд: " + e.getMessage());
         }
     }
@@ -76,10 +113,10 @@ public class WordTrainerBot extends TelegramLongPollingBot {
             session.setState(AppState.CHOOSING_DICTIONARY);
             sendDictionaryList(chatId);
             return;
-        } else if(text.equals("/dictionary")){
+        } else if (text.equals("/dictionary")) {
             handleDictionaryCommand(chatId, session);
             return;
-        } else if(text.equals("/mode")){
+        } else if (text.equals("/mode")) {
             handleModeCommand(chatId, session);
             return;
         }
@@ -92,7 +129,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
     }
 
     private void handleDictionaryCommand(long chatId, UserSession session) {
-        if( session.getState() == AppState.TRAINING ){
+        if (session.getState() == AppState.TRAINING) {
             session.setState(AppState.CHOOSING_DICTIONARY);
             session.setTrainer(null);
         }
@@ -101,12 +138,12 @@ public class WordTrainerBot extends TelegramLongPollingBot {
     }
 
     private void handleModeCommand(long chatId, UserSession session) {
-        if (session.getState() == AppState.TRAINING){
+        if (session.getState() == AppState.TRAINING) {
             session.setState(AppState.CHOOSING_MODE);
             session.setTrainer(null);
         }
 
-        if (session.getDictionary() == null){
+        if (session.getDictionary() == null) {
             sendText(chatId, "Сначала выберите словарь.");
             sendDictionaryList(chatId);
         } else {
@@ -146,6 +183,7 @@ public class WordTrainerBot extends TelegramLongPollingBot {
         } else if (data.equals(Callbacks.BACK_TO_MENU)) {
             session.setState(AppState.CHOOSING_DICTIONARY);
             sendDictionaryList(chatId);
+
         } else if (data.startsWith(Callbacks.LISTEN_PREFIX)) {
             String word = data.substring(Callbacks.LISTEN_PREFIX.length());
             File audio = audioService.getAudio(word);
@@ -161,6 +199,11 @@ public class WordTrainerBot extends TelegramLongPollingBot {
             } else {
                 sendText(chatId, "Не удалось загрузить аудио");
             }
+        } else if (data.equals(Callbacks.UPLOAD_DICTIONARY)) {
+            sendText(chatId, "Пришлите .txt файл в формате: первая строка — название словаря, далее\n" +
+                    "  слова в формате english = russian = definition");
+
+            session.setState(AppState.UPLOADING_DICTIONARY);
         }
     }
 
@@ -202,6 +245,10 @@ public class WordTrainerBot extends TelegramLongPollingBot {
             button.setCallbackData(Callbacks.DICT_PREFIX + i);
             rows.add(List.of(button));
         }
+
+        InlineKeyboardButton updDict = new InlineKeyboardButton("📥 Загрузить словарь");
+        updDict.setCallbackData(Callbacks.UPLOAD_DICTIONARY);
+        rows.add(List.of(updDict));
 
         sendWithKeyboard(chatId, "📚 Выберите словарь:", rows);
     }

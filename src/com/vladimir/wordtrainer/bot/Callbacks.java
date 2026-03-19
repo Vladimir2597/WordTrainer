@@ -7,6 +7,7 @@ public class Callbacks {
     public static final String RETRY_ALL = "retry_all";
     public static final String BACK_TO_MENU = "back_to_menu";
     public static final String LISTEN_PREFIX = "listen";
+    public static final String UPLOAD_DICTIONARY = "upload_dictionary";
 
     private Callbacks() {}
 }

@@ -1,7 +1,0 @@
-instant = мгновенный, немедленный = adj. happening immediately, without delay
-beyond = за пределами, вне = prep./adv. further away than something; outside the limits of something
-disease = болезнь = noun. an illness that affects people, animals, or plants
-environment = окружающая среда = noun. the natural world around us, including air, water, and land
-pollute = загрязнять = verb. to make air, water, or land dirty or harmful
-sophisticated = сложный, изощрённый = adj. clever and complex in design or understanding
-wounds = раны, повреждения = noun. damage to the body such as a cut, hole, or injury
