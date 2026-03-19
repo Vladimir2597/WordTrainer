@@ -1,12 +1,15 @@
 package com.vladimir.wordtrainer.bot;
 
+import com.vladimir.wordtrainer.db.DictionaryRepository;
 import com.vladimir.wordtrainer.db.UserRepository;
 import com.vladimir.wordtrainer.model.Dictionary;
 import com.vladimir.wordtrainer.model.Word;
 import com.vladimir.wordtrainer.service.*;
 import com.vladimir.wordtrainer.session.AppState;
 import com.vladimir.wordtrainer.session.UserSession;
+import com.vladimir.wordtrainer.util.FileUtil;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -28,18 +31,21 @@ public class WordTrainerBot extends TelegramLongPollingBot {
     private final DictionaryManager dictionaryManager;
     private final AudioService audioService;
     private final UserRepository userRepository;
+    private final DictionaryRepository dictionaryRepository;
     private final Map<Long, UserSession> sessions = new HashMap<>();
 
     public WordTrainerBot(String botToken,
                           String botUsername,
                           DictionaryManager dictionaryManager,
                           AudioService audioService,
-                          UserRepository userRepository) {
+                          UserRepository userRepository,
+                          DictionaryRepository dictionaryRepository) {
         super(botToken);
         this.botUsername = botUsername;
         this.dictionaryManager = dictionaryManager;
         this.audioService = audioService;
         this.userRepository = userRepository;
+        this.dictionaryRepository = dictionaryRepository;
         registerBotCommands();
     }
 
@@ -64,6 +70,26 @@ public class WordTrainerBot extends TelegramLongPollingBot {
             String data = update.getCallbackQuery().getData();
             UserSession session = sessions.computeIfAbsent(chatId, id -> new UserSession());
             handleCallback(chatId, data, session);
+        } else if (update.getMessage().hasDocument()){
+            long chatId = update.getMessage().getChatId();
+            UserSession session = sessions.computeIfAbsent(chatId, id -> new UserSession());
+            if (session.getState() == AppState.UPLOADING_DICTIONARY) {
+                String fileId = update.getMessage().getDocument().getFileId();
+                try {
+                    File file = downloadFile(execute(new GetFile(fileId)));
+
+                    String name = FileUtil.loadDictionaryName(file);
+                    List<Word> words = FileUtil.loadWordsFromFile(file);
+
+                    long dictionaryId = dictionaryRepository.saveDictionary(name);
+                    dictionaryRepository.saveWord(dictionaryId, words);
+
+                    sendText(chatId, "Словарь \"" + name + "\" загружен! " + words.size() + " слов.");
+                    session.setState(AppState.CHOOSING_DICTIONARY);
+                } catch (TelegramApiException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
     }
 
@@ -173,6 +199,11 @@ public class WordTrainerBot extends TelegramLongPollingBot {
             } else {
                 sendText(chatId, "Не удалось загрузить аудио");
             }
+        } else if (data.equals(Callbacks.UPLOAD_DICTIONARY)) {
+            sendText(chatId, "Пришлите .txt файл в формате: первая строка — название словаря, далее\n" +
+                    "  слова в формате english = russian = definition");
+
+            session.setState(AppState.UPLOADING_DICTIONARY);
         }
     }
 
@@ -214,6 +245,10 @@ public class WordTrainerBot extends TelegramLongPollingBot {
             button.setCallbackData(Callbacks.DICT_PREFIX + i);
             rows.add(List.of(button));
         }
+
+        InlineKeyboardButton updDict = new InlineKeyboardButton("📥 Загрузить словарь");
+        updDict.setCallbackData(Callbacks.UPLOAD_DICTIONARY);
+        rows.add(List.of(updDict));
 
         sendWithKeyboard(chatId, "📚 Выберите словарь:", rows);
     }
