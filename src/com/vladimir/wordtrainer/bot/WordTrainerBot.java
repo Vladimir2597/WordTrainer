@@ -1,5 +1,6 @@
 package com.vladimir.wordtrainer.bot;
 
+import com.vladimir.wordtrainer.db.UserRepository;
 import com.vladimir.wordtrainer.model.Dictionary;
 import com.vladimir.wordtrainer.model.Word;
 import com.vladimir.wordtrainer.service.*;
@@ -26,13 +27,19 @@ public class WordTrainerBot extends TelegramLongPollingBot {
     private final String botUsername;
     private final DictionaryManager dictionaryManager;
     private final AudioService audioService;
+    private final UserRepository userRepository;
     private final Map<Long, UserSession> sessions = new HashMap<>();
 
-    public WordTrainerBot(String botToken, String botUsername, DictionaryManager dictionaryManager, AudioService audioService) {
+    public WordTrainerBot(String botToken,
+                          String botUsername,
+                          DictionaryManager dictionaryManager,
+                          AudioService audioService,
+                          UserRepository userRepository) {
         super(botToken);
         this.botUsername = botUsername;
         this.dictionaryManager = dictionaryManager;
         this.audioService = audioService;
+        this.userRepository = userRepository;
         registerBotCommands();
     }
 
@@ -44,11 +51,15 @@ public class WordTrainerBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         if (update.hasMessage() && update.getMessage().hasText()) {
+            org.telegram.telegrambots.meta.api.objects.User from = update.getMessage().getFrom();
+            userRepository.saveUserIfNotExists(from.getId(), from.getUserName(), from.getFirstName(), from.getLastName());
             long chatId = update.getMessage().getChatId();
             String text = update.getMessage().getText().trim();
             UserSession session = sessions.computeIfAbsent(chatId, id -> new UserSession());
             handleMessage(chatId, text, session);
         } else if (update.hasCallbackQuery()) {
+            org.telegram.telegrambots.meta.api.objects.User from = update.getCallbackQuery().getFrom();
+            userRepository.saveUserIfNotExists(from.getId(), from.getUserName(), from.getFirstName(), from.getLastName());
             long chatId = update.getCallbackQuery().getMessage().getChatId();
             String data = update.getCallbackQuery().getData();
             UserSession session = sessions.computeIfAbsent(chatId, id -> new UserSession());

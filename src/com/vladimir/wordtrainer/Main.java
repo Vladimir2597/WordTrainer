@@ -1,6 +1,8 @@
 package com.vladimir.wordtrainer;
 
 import com.vladimir.wordtrainer.bot.WordTrainerBot;
+import com.vladimir.wordtrainer.db.DataSourceProvider;
+import com.vladimir.wordtrainer.db.UserRepository;
 import com.vladimir.wordtrainer.service.AudioService;
 import com.vladimir.wordtrainer.service.DictionaryManager;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
@@ -20,10 +22,14 @@ public class Main {
 
         DictionaryManager dictionaryManager = new DictionaryManager("dictionaries.txt");
         AudioService audioService = new AudioService(voiceRssKey, "audio");
-
+        UserRepository userRepository = new UserRepository(DataSourceProvider.create());
         try {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);
-            botsApi.registerBot(new WordTrainerBot(botToken, botUsername, dictionaryManager, audioService));
+            botsApi.registerBot(new WordTrainerBot(botToken,
+                    botUsername,
+                    dictionaryManager,
+                    audioService,
+                    userRepository));
             System.out.println("Бот запущен!");
         } catch (TelegramApiException e) {
             System.err.println("Ошибка запуска бота: " + e.getMessage());
