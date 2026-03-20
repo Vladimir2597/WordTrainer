@@ -22,17 +22,19 @@ public class DictionaryRepository {
 
     private void init(){
         String sqlDictionary = "create table if not exists dictionary (\n" +
-                "      id bigserial primary key,\n" +
-                "      name varchar(255) not null unique\n" +
+                "      id bigserial constraint pk_dictionary_id primary key,\n" +
+                "      name varchar(255) not null constraint unq_dictionary_name unique,\n" +
+                "      telegram_user_id bigint constraint fk_dictionary_app_user_telegram_user_id references app_user(telegram_user_id),\n" +
+                "      is_public boolean not null default true\n" +
                 "  );";
 
         String sqlWord = "create table if not exists word (\n" +
-                "      id bigserial primary key,\n" +
-                "      dictionary_id bigint not null references dictionary(id),\n" +
+                "      id bigserial constraint pk_word_id primary key,\n" +
+                "      dictionary_id bigint not null constraint fk_word_dictionary_dictionary_id references dictionary(id),\n" +
                 "      english varchar(255) not null,\n" +
                 "      russian varchar(255) not null,\n" +
                 "      definition text not null,\n" +
-                "      unique(dictionary_id, english)\n" +
+                "      constraint unq_word_dictionary_id_english unique(dictionary_id, english)\n" +
                 "  );";
 
         try(Connection connection = dataSource.getConnection();

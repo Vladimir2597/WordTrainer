@@ -15,8 +15,8 @@ public class UserRepository {
 
     private void init(){
         String sql = "create table if not exists app_user (\n" +
-                "    id bigserial primary key,\n" +
-                "    telegram_user_id bigint not null unique,\n" +
+                "    id bigserial constraint pk_app_user_id primary key,\n" +
+                "    telegram_user_id bigint not null constraint unq_app_user_telegram_user_id unique,\n" +
                 "    username varchar(255),\n" +
                 "    first_name varchar(255),\n" +
                 "    last_name varchar(255),\n" +
