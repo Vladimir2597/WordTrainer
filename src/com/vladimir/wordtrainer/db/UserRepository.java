@@ -3,6 +3,7 @@ package com.vladimir.wordtrainer.db;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class UserRepository {
@@ -32,7 +33,7 @@ public class UserRepository {
         }
     }
 
-    public void saveUserIfNotExists(Long telegramUserId, String username, String firstName, String lastName){
+    public void saveUser(Long telegramUserId, String username, String firstName, String lastName){
         String sql = "insert into app_user (telegram_user_id, username, first_name, last_name)\n" +
                 "values (?,?,?,?)\n" +
                 "on conflict (telegram_user_id) do nothing";
@@ -48,6 +49,24 @@ public class UserRepository {
 
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка сохранения пользователя", e);
+        }
+    }
+
+    public boolean isUserExists(Long telegramUserId){
+        String sql = "select count(1)\n" +
+                "  from app_user ap\n" +
+                " where ap.telegram_user_id = ?";
+
+        try(Connection connection = dataSource.getConnection();
+            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
+            preparedStatement.setLong(1, telegramUserId);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            resultSet.next();
+
+            return resultSet.getInt(1) > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка в получение пользователя", e);
         }
     }
 }

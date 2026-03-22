@@ -13,7 +13,7 @@
 
 - **[BUG] IndexOutOfBoundsException при выборе словаря** — `WordTrainerBot.java:117`.
   `Integer.parseInt(data.substring(5))` без проверки границ. Если придёт `dict:999` — бот упадёт.
-  Добавить try-catch + проверку `index < dictionaryManager.size()`.
+  Добавить try-catch + проверку `index < dictionaryService.size()`.
 
 - **[BUG] IndexOutOfBoundsException в DictionaryManager** — `DictionaryManager.java:28`, метод `loadDictionaryByIndex()`.
   Нет проверки границ перед `names.get(index)`. Добавить валидацию индекса.
