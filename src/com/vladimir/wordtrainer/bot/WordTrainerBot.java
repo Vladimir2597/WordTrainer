@@ -198,7 +198,7 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
         List<BotCommand> commands = List.of(
                 new BotCommand("/dictionary", "Выбрать словарь"),
                 new BotCommand("/mode", "Сменить режим обучения"),
-                new BotCommand("/managing_dictionaries","Управление словарями")
+                new BotCommand("/manage_dict","Управление словарями")
         );
         setMyCommands.setCommands(commands);
         try {

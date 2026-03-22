@@ -59,10 +59,6 @@ public class PreTrainingHandler {
             rows.add(List.of(button));
         }
 
-        InlineKeyboardButton manageDict = new InlineKeyboardButton(Callbacks.MANAGE_DICTIONARIES.buttonText());
-        manageDict.setCallbackData(Callbacks.MANAGE_DICTIONARIES.callback());
-        rows.add(List.of(manageDict));
-
         messageSender.sendWithKeyboard(chatId, "📚 Выберите словарь:", rows);
     }
 
