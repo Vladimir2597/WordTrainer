@@ -1,4 +1,4 @@
-package com.vladimir.wordtrainer.service;
+package com.vladimir.wordtrainer.service.trainer;
 
 import com.vladimir.wordtrainer.model.Dictionary;
 import com.vladimir.wordtrainer.model.Word;
@@ -92,7 +92,7 @@ public abstract class AbstractWordTrainer implements Trainer {
         return correctIndices.size() < shuffledIndices.size();
     }
 
-    public Word getCurrentWord(){
+    public Word getCurrentWord() {
         return dictionary.getWord(shuffledIndices.get(currentPosition));
     }
 

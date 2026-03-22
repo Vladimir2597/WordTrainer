@@ -1,4 +1,4 @@
-package com.vladimir.wordtrainer.service;
+package com.vladimir.wordtrainer.service.trainer;
 
 import com.vladimir.wordtrainer.model.Dictionary;
 import com.vladimir.wordtrainer.model.Word;

@@ -7,10 +7,11 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 public class DictionaryRepository {
     private final DataSource dataSource;
@@ -22,17 +23,20 @@ public class DictionaryRepository {
 
     private void init(){
         String sqlDictionary = "create table if not exists dictionary (\n" +
-                "      id bigserial primary key,\n" +
-                "      name varchar(255) not null unique\n" +
+                "      id bigserial constraint pk_dictionary_id primary key,\n" +
+                "      name varchar(255) not null,\n" +
+                "      upload_telegram_user_id bigint constraint fk_dictionary_app_user_upload_telegram_user_id references app_user(telegram_user_id),\n" +
+                "      is_public boolean not null default true,\n" +
+                "      constraint unq_dictionary_name_upload_telegram_user_id unique(name, upload_telegram_user_id)\n" +
                 "  );";
 
         String sqlWord = "create table if not exists word (\n" +
-                "      id bigserial primary key,\n" +
-                "      dictionary_id bigint not null references dictionary(id),\n" +
+                "      id bigserial constraint pk_word_id primary key,\n" +
+                "      dictionary_id bigint not null constraint fk_word_dictionary_dictionary_id references dictionary(id),\n" +
                 "      english varchar(255) not null,\n" +
                 "      russian varchar(255) not null,\n" +
                 "      definition text not null,\n" +
-                "      unique(dictionary_id, english)\n" +
+                "      constraint unq_word_dictionary_id_english unique(dictionary_id, english)\n" +
                 "  );";
 
         try(Connection connection = dataSource.getConnection();
@@ -47,15 +51,17 @@ public class DictionaryRepository {
         }
     }
 
-    public long saveDictionary(String name){
-        String sql = "insert into dictionary (name)\n" +
-                "values (?)\n" +
-                "on conflict (name) do update set name = excluded.name\n" +
+    public long saveDictionary(String name, long telegramUserId, boolean isPublic){
+        String sql = "insert into dictionary (name, upload_telegram_user_id, is_public)\n" +
+                "values (?,?,?)\n" +
+                "on conflict (name, upload_telegram_user_id) do update set name = excluded.name\n" +
                 "returning id";
 
         try(Connection connection = dataSource.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement(sql)){
             preparedStatement.setString(1, name);
+            preparedStatement.setLong(2, telegramUserId);
+            preparedStatement.setBoolean(3, isPublic);
 
             ResultSet rs = preparedStatement.executeQuery();
 
@@ -89,23 +95,107 @@ public class DictionaryRepository {
         }
     }
 
-    public Map<Long, String> getAllDictionaries(){
-        String sql = "select id, name from dictionary";
+    public Map<Long, String> getUserSelectedDictionaries(long telegramUserId) {
+        String sql = "select d.id, d.name\n" +
+                     "  from user_dictionary ud\n" +
+                     "  join dictionary d on d.id = ud.dictionary_id\n" +
+                     " where ud.telegram_user_id = ?\n" +
+                     " order by d.id";
+        return queryDictionaries(sql, telegramUserId);
+    }
+
+    public Map<Long, String> getDictionariesToAdd(long telegramUserId) {
+        String sql = "select d.id, d.name\n" +
+                     "  from dictionary d\n" +
+                     " where (d.upload_telegram_user_id = ? or d.is_public = true)\n" +
+                     "   and not exists (\n" +
+                     "       select 1 from user_dictionary ud\n" +
+                     "        where ud.dictionary_id = d.id\n" +
+                     "          and ud.telegram_user_id = ?\n" +
+                     "   )\n" +
+                     " order by d.id";
+        return queryDictionaries2(sql, telegramUserId);
+    }
+
+    public Map<Long, String> getDictionariesToRemove(long telegramUserId) {
+        String sql = "select d.id, d.name\n" +
+                     "  from dictionary d\n" +
+                     " where (d.upload_telegram_user_id = ? or d.is_public = true)\n" +
+                     "   and exists (\n" +
+                     "       select 1 from user_dictionary ud\n" +
+                     "        where ud.dictionary_id = d.id\n" +
+                     "          and ud.telegram_user_id = ?\n" +
+                     "   )\n" +
+                     " order by d.id";
+        return queryDictionaries2(sql, telegramUserId);
+    }
+
+    public Map<Long, String> getOwnDictionaries(long telegramUserId) {
+        String sql = "select d.id, d.name\n" +
+                     "  from dictionary d\n" +
+                     " where d.upload_telegram_user_id = ?\n" +
+                     " order by d.id";
+        return queryDictionaries(sql, telegramUserId);
+    }
+
+    private Map<Long, String> queryDictionaries(String sql, long telegramUserId) {
         Map<Long, String> dictionaries = new HashMap<>();
-
-        try(Connection connection = dataSource.getConnection();
-            PreparedStatement preparedStatement = connection.prepareStatement(sql)){
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                dictionaries.put(resultSet.getLong("id"),
-                        resultSet.getString("name"));
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, telegramUserId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                dictionaries.put(rs.getLong("id"), rs.getString("name"));
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Ошибка во время получения всех словарей", e);
+            throw new RuntimeException("Ошибка получения словарей", e);
         }
-
         return dictionaries;
+    }
+
+    private Map<Long, String> queryDictionaries2(String sql, long telegramUserId) {
+        Map<Long, String> dictionaries = new HashMap<>();
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setLong(1, telegramUserId);
+            ps.setLong(2, telegramUserId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                dictionaries.put(rs.getLong("id"), rs.getString("name"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка получения словарей", e);
+        }
+        return dictionaries;
+    }
+
+    public void deleteDictionary(long dictionaryId) {
+        String sqlDeleteUserDictionary = "delete from user_dictionary where dictionary_id = ?";
+        String sqlDeleteWords = "delete from word where dictionary_id = ?";
+        String sqlDeleteDictionary = "delete from dictionary where id = ?";
+
+        try (Connection connection = dataSource.getConnection()) {
+            connection.setAutoCommit(false);
+            try (PreparedStatement psUserDict = connection.prepareStatement(sqlDeleteUserDictionary);
+                 PreparedStatement psWords = connection.prepareStatement(sqlDeleteWords);
+                 PreparedStatement psDict = connection.prepareStatement(sqlDeleteDictionary)) {
+
+                psUserDict.setLong(1, dictionaryId);
+                psWords.setLong(1, dictionaryId);
+                psDict.setLong(1, dictionaryId);
+
+                psUserDict.execute();
+                psWords.execute();
+                psDict.execute();
+
+                connection.commit();
+            } catch (SQLException e) {
+                connection.rollback();
+                throw new RuntimeException("Ошибка удаления словаря", e);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка удаления словаря", e);
+        }
     }
 
     public List<Word> getWordsByDictionaryId(long dictionaryId) {

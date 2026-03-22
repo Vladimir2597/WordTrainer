@@ -2,6 +2,8 @@ package com.vladimir.wordtrainer.service;
 
 import com.vladimir.wordtrainer.model.Dictionary;
 import com.vladimir.wordtrainer.model.Word;
+import com.vladimir.wordtrainer.service.trainer.DefinitionTrainer;
+import com.vladimir.wordtrainer.service.trainer.AbstractWordTrainer;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
