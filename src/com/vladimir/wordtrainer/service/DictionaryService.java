@@ -19,11 +19,23 @@ public class DictionaryService {
         this.userDictionaryRepository = userDictionaryRepository;
     }
 
-    public Map<Long, String> getAvailableDictionaries(Long telegramUserId) {
-        return dictionaryRepository.getAvailableDictionaries(telegramUserId);
+    public Map<Long, String> getUserSelectedDictionaries(long telegramUserId) {
+        return dictionaryRepository.getUserSelectedDictionaries(telegramUserId);
     }
 
-    public List<Word> getWords(Long dictionaryId) {
+    public Map<Long, String> getDictionariesToAdd(long telegramUserId) {
+        return dictionaryRepository.getDictionariesToAdd(telegramUserId);
+    }
+
+    public Map<Long, String> getDictionariesToRemove(long telegramUserId) {
+        return dictionaryRepository.getDictionariesToRemove(telegramUserId);
+    }
+
+    public Map<Long, String> getOwnDictionaries(long telegramUserId) {
+        return dictionaryRepository.getOwnDictionaries(telegramUserId);
+    }
+
+    public List<Word> getWords(long dictionaryId) {
         return dictionaryRepository.getWordsByDictionaryId(dictionaryId);
     }
 
@@ -43,5 +55,13 @@ public class DictionaryService {
 
     public List<Word> parseDictionaryWords(File file) {
         return FileUtil.loadWordsFromFile(file);
+    }
+
+    public void removeDictionaryFromUser(long telegramUserId, long dictionaryId){
+        userDictionaryRepository.removeDictionaryFromUser(telegramUserId, dictionaryId);
+    }
+
+    public void deleteDictionary(long dictionaryId){
+        dictionaryRepository.deleteDictionary(dictionaryId);
     }
 }

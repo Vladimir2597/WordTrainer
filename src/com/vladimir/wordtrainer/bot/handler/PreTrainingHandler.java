@@ -29,7 +29,6 @@ public class PreTrainingHandler {
             session.setState(AppState.CHOOSING_DICTIONARY);
             session.setTrainer(null);
         }
-
         sendDictionaryList(chatId, session);
     }
 
@@ -49,33 +48,33 @@ public class PreTrainingHandler {
 
     public void sendDictionaryList(long chatId, UserSession session) {
         session.setAvailableDictionary(
-                dictionaryService.getAvailableDictionaries(session.getTelegramUserId())
+                dictionaryService.getUserSelectedDictionaries(session.getTelegramUserId())
         );
         Map<Long, String> dictionaries = session.getAvailableDictionary();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
-        for(Long dictionaryId: dictionaries.keySet()){
+        for (Long dictionaryId : dictionaries.keySet()) {
             InlineKeyboardButton button = new InlineKeyboardButton(dictionaries.get(dictionaryId));
-            button.setCallbackData(Callbacks.DICT_PREFIX + dictionaryId);
+            button.setCallbackData(Callbacks.DICT_PREFIX.callback() + dictionaryId);
             rows.add(List.of(button));
         }
 
-        InlineKeyboardButton updDict = new InlineKeyboardButton("📥 Загрузить словарь");
-        updDict.setCallbackData(Callbacks.UPLOAD_DICTIONARY);
-        rows.add(List.of(updDict));
+        InlineKeyboardButton manageDict = new InlineKeyboardButton(Callbacks.MANAGE_DICTIONARIES.buttonText());
+        manageDict.setCallbackData(Callbacks.MANAGE_DICTIONARIES.callback());
+        rows.add(List.of(manageDict));
 
         messageSender.sendWithKeyboard(chatId, "📚 Выберите словарь:", rows);
     }
 
     public void sendModeSelection(long chatId, String dictionaryName) {
-        InlineKeyboardButton byDefinition = new InlineKeyboardButton("По определению на английском");
-        byDefinition.setCallbackData(Callbacks.MODE_DEFINITION);
+        InlineKeyboardButton byDefinition = new InlineKeyboardButton(Callbacks.MODE_DEFINITION.buttonText());
+        byDefinition.setCallbackData(Callbacks.MODE_DEFINITION.callback());
 
-        InlineKeyboardButton byRussian = new InlineKeyboardButton("По слову на русском");
-        byRussian.setCallbackData(Callbacks.MODE_RUSSIAN);
+        InlineKeyboardButton byRussian = new InlineKeyboardButton(Callbacks.MODE_RUSSIAN.buttonText());
+        byRussian.setCallbackData(Callbacks.MODE_RUSSIAN.callback());
 
-        InlineKeyboardButton backToMenu = new InlineKeyboardButton("Выбрать другой словарь");
-        backToMenu.setCallbackData(Callbacks.BACK_TO_MENU);
+        InlineKeyboardButton backToMenu = new InlineKeyboardButton(Callbacks.BACK_TO_MENU.buttonText());
+        backToMenu.setCallbackData(Callbacks.BACK_TO_MENU.callback());
 
         messageSender.sendWithKeyboard(chatId, "Вы выбрали: " + dictionaryName + "\n\nВыберите режим:",
                 List.of(List.of(byDefinition), List.of(byRussian), List.of(backToMenu)));

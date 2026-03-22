@@ -11,7 +11,6 @@ import com.vladimir.wordtrainer.service.TrainingService;
 import com.vladimir.wordtrainer.service.UserService;
 import com.vladimir.wordtrainer.session.AppState;
 import com.vladimir.wordtrainer.session.UserSession;
-import com.vladimir.wordtrainer.util.FileUtil;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
@@ -108,6 +107,9 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
         } else if (text.equals("/mode")) {
             preTrainingHandler.handleModeCommand(chatId, session);
             return;
+        } else if (text.equals("/managing_dictionaries")) {
+            dictionaryManagementHandler.sendManagementMenu(chatId);
+            return;
         }
 
         switch (session.getState()) {
@@ -118,43 +120,66 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
     }
 
     private void handleCallback(long chatId, String data, UserSession session) {
-        if (data.startsWith(Callbacks.DICT_PREFIX)) {
-            Long dictionaryId = Long.parseLong(data.substring(Callbacks.DICT_PREFIX.length()));
+        if (data.startsWith(Callbacks.DICT_PREFIX.callback())) {
+            Long dictionaryId = Long.parseLong(data.substring(Callbacks.DICT_PREFIX.callback().length()));
             List<Word> words = preTrainingHandler.getDictionaryService().getWords(dictionaryId);
-
             Dictionary dictionary = new Dictionary(words, session.getAvailableDictionary().get(dictionaryId));
             session.setDictionary(dictionary);
             session.setState(AppState.CHOOSING_MODE);
             preTrainingHandler.sendModeSelection(chatId, dictionary.getName());
 
-        } else if (data.equals(Callbacks.MODE_DEFINITION)) {
+        } else if (data.equals(Callbacks.MODE_DEFINITION.callback())) {
             trainingHandler.handleModeSelected(chatId, TrainingService.MODE_DEFINITION, session);
             trainingHandler.sendNextQuestion(chatId, session);
 
-        } else if (data.equals(Callbacks.MODE_RUSSIAN)) {
+        } else if (data.equals(Callbacks.MODE_RUSSIAN.callback())) {
             trainingHandler.handleModeSelected(chatId, TrainingService.MODE_RUSSIAN, session);
             trainingHandler.sendNextQuestion(chatId, session);
 
-        } else if (data.equals(Callbacks.RETRY_WRONG)) {
+        } else if (data.equals(Callbacks.RETRY_WRONG.callback())) {
             session.getTrainer().resetWithWrongOnly();
             trainingHandler.sendNextQuestion(chatId, session);
 
-        } else if (data.equals(Callbacks.RETRY_ALL)) {
+        } else if (data.equals(Callbacks.RETRY_ALL.callback())) {
             session.getTrainer().resetAll();
             trainingHandler.sendNextQuestion(chatId, session);
 
-        } else if (data.equals(Callbacks.BACK_TO_MENU)) {
+        } else if (data.equals(Callbacks.BACK_TO_MENU.callback())) {
             session.setState(AppState.CHOOSING_DICTIONARY);
             preTrainingHandler.sendDictionaryList(chatId, session);
 
-        } else if (data.startsWith(Callbacks.LISTEN)) {
-            String word =  session.getTrainer().getCurrentWord().getEnglish();
+        } else if (data.equals(Callbacks.LISTEN.callback())) {
+            String word = session.getTrainer().getCurrentWord().getEnglish();
             trainingHandler.handleListenCallback(chatId, word);
 
-        } else if (data.equals(Callbacks.UPLOAD_DICTIONARY)) {
+        } else if (data.equals(Callbacks.MANAGE_DICTIONARIES.callback())) {
+            dictionaryManagementHandler.sendManagementMenu(chatId);
+
+        } else if (data.equals(Callbacks.ADD_EXISTING_DICTIONARY.callback())) {
+            dictionaryManagementHandler.sendAddDictionaryList(chatId, session);
+
+        } else if (data.startsWith(Callbacks.ADD_DICT_PREFIX.callback())) {
+            long dictionaryId = Long.parseLong(data.substring(Callbacks.ADD_DICT_PREFIX.callback().length()));
+            dictionaryManagementHandler.handleAddDictionary(chatId, dictionaryId, session);
+
+        } else if (data.equals(Callbacks.REMOVE_DICTIONARY.callback())) {
+            dictionaryManagementHandler.sendRemoveDictionaryList(chatId, session);
+
+        } else if (data.startsWith(Callbacks.REMOVE_DICT_PREFIX.callback())) {
+            long dictionaryId = Long.parseLong(data.substring(Callbacks.REMOVE_DICT_PREFIX.callback().length()));
+            dictionaryManagementHandler.handleRemoveDictionary(chatId, dictionaryId, session);
+
+        } else if (data.equals(Callbacks.DELETE_DICTIONARY.callback())) {
+            dictionaryManagementHandler.sendDeleteDictionaryList(chatId, session);
+
+        } else if (data.startsWith(Callbacks.DELETE_DICT_PREFIX.callback())) {
+            long dictionaryId = Long.parseLong(data.substring(Callbacks.DELETE_DICT_PREFIX.callback().length()));
+            dictionaryManagementHandler.handleDeleteDictionary(chatId, dictionaryId);
+
+        } else if (data.equals(Callbacks.UPLOAD_DICTIONARY.callback())) {
             dictionaryManagementHandler.handleUploadRequest(chatId, session);
 
-        } else if (data.equals(Callbacks.DICT_VISIBILITY_PUBLIC) || data.equals(Callbacks.DICT_VISIBILITY_PRIVATE)) {
+        } else if (data.equals(Callbacks.DICT_VISIBILITY_PUBLIC.callback()) || data.equals(Callbacks.DICT_VISIBILITY_PRIVATE.callback())) {
             dictionaryManagementHandler.handleVisibilityCallback(chatId, data, session);
             preTrainingHandler.sendDictionaryList(chatId, session);
         }
@@ -172,7 +197,8 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
         SetMyCommands setMyCommands = new SetMyCommands();
         List<BotCommand> commands = List.of(
                 new BotCommand("/dictionary", "Выбрать словарь"),
-                new BotCommand("/mode", "Сменить режим обучения")
+                new BotCommand("/mode", "Сменить режим обучения"),
+                new BotCommand("/managing_dictionaries","Управление словарями")
         );
         setMyCommands.setCommands(commands);
         try {
@@ -206,8 +232,8 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
 
     @Override
     public void sendWithListenButton(long chatId, String text, String word) {
-        InlineKeyboardButton btn = new InlineKeyboardButton("🔊 Произнести слово");
-        btn.setCallbackData(Callbacks.LISTEN);
+        InlineKeyboardButton btn = new InlineKeyboardButton(Callbacks.LISTEN.buttonText());
+        btn.setCallbackData(Callbacks.LISTEN.callback());
         sendWithKeyboard(chatId, text, List.of(List.of(btn)));
     }
 

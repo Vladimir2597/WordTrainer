@@ -1,16 +1,32 @@
 package com.vladimir.wordtrainer.bot;
 
-public class Callbacks {
-    public static final String DICT_PREFIX = "dict:";
-    public static final String MODE_DEFINITION = "mode_definition";
-    public static final String MODE_RUSSIAN = "mode_russian";
-    public static final String RETRY_WRONG = "retry_wrong";
-    public static final String RETRY_ALL = "retry_all";
-    public static final String BACK_TO_MENU = "back_to_menu";
-    public static final String LISTEN = "listen";
-    public static final String UPLOAD_DICTIONARY = "upload_dictionary";
-    public static final String DICT_VISIBILITY_PUBLIC = "dict_visibility_public";
-    public static final String DICT_VISIBILITY_PRIVATE = "dict_visibility_private";
+public enum Callbacks {
+    DICT_PREFIX("dict:", null),
+    MODE_DEFINITION("mode_definition", "По определению на английском"),
+    MODE_RUSSIAN("mode_russian", "По слову на русском"),
+    RETRY_WRONG("retry_wrong", "Повторить неправильные"),
+    RETRY_ALL("retry_all", "Повторить всё заново"),
+    BACK_TO_MENU("back_to_menu", "Выбрать другой словарь"),
+    LISTEN("listen", "🔊 Произнести слово"),
+    MANAGE_DICTIONARIES("manage_dictionaries", "⚙️ Управление словарями"),
+    ADD_EXISTING_DICTIONARY("add_existing_dictionary", "➕ Добавить словарь к себе"),
+    ADD_DICT_PREFIX("add_dict:", null),
+    REMOVE_DICTIONARY("remove_dictionary", "➖ Убрать из моего списка"),
+    REMOVE_DICT_PREFIX("remove_dict:", null),
+    UPLOAD_DICTIONARY("upload_dictionary", "📥 Добавить новый словарь"),
+    DELETE_DICTIONARY("delete_dictionary", "🗑️ Удалить словарь полностью"),
+    DELETE_DICT_PREFIX("delete_dict:", null),
+    DICT_VISIBILITY_PUBLIC("dict_visibility_public", "🌍 Публичный"),
+    DICT_VISIBILITY_PRIVATE("dict_visibility_private", "🔒 Только для меня");
 
-    private Callbacks() {}
+    private final String callback;
+    private final String buttonText;
+
+    Callbacks(String callback, String buttonText) {
+        this.callback = callback;
+        this.buttonText = buttonText;
+    }
+
+    public String callback() { return callback; }
+    public String buttonText() { return buttonText; }
 }

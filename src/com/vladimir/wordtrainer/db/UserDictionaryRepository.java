@@ -71,4 +71,5 @@ public class UserDictionaryRepository {
             throw new RuntimeException("Ошибка добавления публичных словарей пользователю", e);
         }
     }
+
 }

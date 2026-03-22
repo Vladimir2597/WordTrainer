@@ -31,7 +31,6 @@ public class TrainingHandler {
         }
 
         Trainer trainer = session.getTrainer();
-
         Word currentWord = trainer.getCurrentWord();
         String result = trainer.handleAnswer(text);
 
@@ -56,17 +55,17 @@ public class TrainingHandler {
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
 
         if (session.getTrainer().existsMoreWords()) {
-            InlineKeyboardButton retryWrong = new InlineKeyboardButton("Повторить неправильные");
-            retryWrong.setCallbackData(Callbacks.RETRY_WRONG);
+            InlineKeyboardButton retryWrong = new InlineKeyboardButton(Callbacks.RETRY_WRONG.buttonText());
+            retryWrong.setCallbackData(Callbacks.RETRY_WRONG.callback());
             keyboard.add(List.of(retryWrong));
         }
 
-        InlineKeyboardButton retryAll = new InlineKeyboardButton("Повторить всё заново");
-        retryAll.setCallbackData(Callbacks.RETRY_ALL);
+        InlineKeyboardButton retryAll = new InlineKeyboardButton(Callbacks.RETRY_ALL.buttonText());
+        retryAll.setCallbackData(Callbacks.RETRY_ALL.callback());
         keyboard.add(List.of(retryAll));
 
-        InlineKeyboardButton backToMenu = new InlineKeyboardButton("Выбрать другой словарь");
-        backToMenu.setCallbackData(Callbacks.BACK_TO_MENU);
+        InlineKeyboardButton backToMenu = new InlineKeyboardButton(Callbacks.BACK_TO_MENU.buttonText());
+        backToMenu.setCallbackData(Callbacks.BACK_TO_MENU.callback());
         keyboard.add(List.of(backToMenu));
 
         messageSender.sendWithKeyboard(chatId, "♻️ " + text + "\n\nЧто делаем дальше?", keyboard);
