@@ -3,7 +3,6 @@ package com.vladimir.wordtrainer.session;
 import com.vladimir.wordtrainer.model.Dictionary;
 import com.vladimir.wordtrainer.model.Word;
 import com.vladimir.wordtrainer.service.trainer.Trainer;
-import com.vladimir.wordtrainer.service.trainer.Trainer;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,6 @@ public class UserSession {
     private long telegramUserId;
     private String pendingDictionaryName;
     private List<Word> pendingWords;
-    private boolean isExistsInRepository;
     private Map<Long, String> availableDictionary;
 
     public AppState getState() {
@@ -57,14 +55,6 @@ public class UserSession {
     public List<Word> getPendingWords(){ return pendingWords; }
 
     public void setPendingWords(List<Word> pendingWords) { this.pendingWords = pendingWords; }
-
-    public void setExistsInRepository(boolean existsInRepository) {
-        isExistsInRepository = existsInRepository;
-    }
-
-    public boolean isExistsInRepository() {
-        return isExistsInRepository;
-    }
 
     public Map<Long, String> getAvailableDictionary() {
         return availableDictionary;

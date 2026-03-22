@@ -69,10 +69,10 @@ public class PreTrainingHandler {
 
     public void sendModeSelection(long chatId, String dictionaryName) {
         InlineKeyboardButton byDefinition = new InlineKeyboardButton("По определению на английском");
-        byDefinition.setCallbackData(Callbacks.MODE_PREFIX + "definition");
+        byDefinition.setCallbackData(Callbacks.MODE_DEFINITION);
 
         InlineKeyboardButton byRussian = new InlineKeyboardButton("По слову на русском");
-        byRussian.setCallbackData(Callbacks.MODE_PREFIX + "russian");
+        byRussian.setCallbackData(Callbacks.MODE_RUSSIAN);
 
         InlineKeyboardButton backToMenu = new InlineKeyboardButton("Выбрать другой словарь");
         backToMenu.setCallbackData(Callbacks.BACK_TO_MENU);

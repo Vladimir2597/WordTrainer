@@ -86,6 +86,5 @@ public class TrainingHandler {
         if (trainer == null) return;
         session.setTrainer(trainer);
         session.setState(AppState.TRAINING);
-        sendNextQuestion(chatId, session);
     }
 }

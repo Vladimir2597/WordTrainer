@@ -26,12 +26,15 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class WordTrainerBot extends TelegramLongPollingBot implements MessageSender {
     private final String botUsername;
     private final Map<Long, UserSession> sessions = new HashMap<>();
+    private final Set<Long> registeredUsers = new HashSet<>();
     private final UserService userService;
 
     private final TrainingHandler trainingHandler;
@@ -68,7 +71,7 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
             long chatId = update.getMessage().getChatId();
             UserSession session = sessions.computeIfAbsent(chatId, id -> new UserSession());
             session.setTelegramUserId(from.getId());
-            registerUserIfNeeded(from, session);
+            registerUserIfNeeded(from);
             String text = update.getMessage().getText().trim();
             handleMessage(chatId, text, session);
         } else if (update.hasCallbackQuery()) {
@@ -77,7 +80,7 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
             String data = update.getCallbackQuery().getData();
             UserSession session = sessions.computeIfAbsent(chatId, id -> new UserSession());
             session.setTelegramUserId(from.getId());
-            registerUserIfNeeded(from, session);
+            registerUserIfNeeded(from);
             handleCallback(chatId, data, session);
         } else if (update.hasMessage() && update.getMessage().hasDocument()) {
             long chatId = update.getMessage().getChatId();
@@ -124,9 +127,12 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
             session.setState(AppState.CHOOSING_MODE);
             preTrainingHandler.sendModeSelection(chatId, dictionary.getName());
 
-        } else if (data.startsWith(Callbacks.MODE_PREFIX)) {
-            String mode = data.substring(Callbacks.MODE_PREFIX.length());
-            trainingHandler.handleModeSelected(chatId, mode, session);
+        } else if (data.equals(Callbacks.MODE_DEFINITION)) {
+            trainingHandler.handleModeSelected(chatId, TrainingService.MODE_DEFINITION, session);
+            trainingHandler.sendNextQuestion(chatId, session);
+
+        } else if (data.equals(Callbacks.MODE_RUSSIAN)) {
+            trainingHandler.handleModeSelected(chatId, TrainingService.MODE_RUSSIAN, session);
             trainingHandler.sendNextQuestion(chatId, session);
 
         } else if (data.equals(Callbacks.RETRY_WRONG)) {
@@ -154,10 +160,11 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
         }
     }
 
-    private void registerUserIfNeeded(org.telegram.telegrambots.meta.api.objects.User from, UserSession session) {
-        if (!session.isExistsInRepository() && !userService.isUserExists(from.getId())) {
-            userService.register(from.getId(), from.getUserName(), from.getFirstName(), from.getLastName());
-            session.setExistsInRepository(true);
+    private void registerUserIfNeeded(org.telegram.telegrambots.meta.api.objects.User from) {
+        long userId = from.getId();
+        if (!registeredUsers.contains(userId) && !userService.isUserExists(userId)) {
+            userService.register(userId, from.getUserName(), from.getFirstName(), from.getLastName());
+            registeredUsers.add(userId);
         }
     }
 
