@@ -107,7 +107,7 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
         } else if (text.equals("/mode")) {
             preTrainingHandler.handleModeCommand(chatId, session);
             return;
-        } else if (text.equals("/managing_dictionaries")) {
+        } else if (text.equals("/manage_dict")) {
             dictionaryManagementHandler.sendManagementMenu(chatId);
             return;
         }
