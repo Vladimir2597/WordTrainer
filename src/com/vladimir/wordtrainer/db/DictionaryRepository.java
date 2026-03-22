@@ -142,5 +142,4 @@ public class DictionaryRepository {
 
         return words;
     }
-
 }

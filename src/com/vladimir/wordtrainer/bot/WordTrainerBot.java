@@ -11,6 +11,7 @@ import com.vladimir.wordtrainer.service.TrainingService;
 import com.vladimir.wordtrainer.service.UserService;
 import com.vladimir.wordtrainer.session.AppState;
 import com.vladimir.wordtrainer.session.UserSession;
+import com.vladimir.wordtrainer.util.FileUtil;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
