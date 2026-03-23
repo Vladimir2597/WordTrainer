@@ -12,6 +12,7 @@ import com.vladimir.wordtrainer.service.UserService;
 import com.vladimir.wordtrainer.session.AppState;
 import com.vladimir.wordtrainer.session.UserSession;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -77,9 +78,11 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
             org.telegram.telegrambots.meta.api.objects.User from = update.getCallbackQuery().getFrom();
             long chatId = update.getCallbackQuery().getMessage().getChatId();
             String data = update.getCallbackQuery().getData();
+            String callbackQueryId = update.getCallbackQuery().getId();
             UserSession session = sessions.computeIfAbsent(chatId, id -> new UserSession());
             session.setTelegramUserId(from.getId());
             registerUserIfNeeded(from);
+            answerCallbackQuery(callbackQueryId);
             handleCallback(chatId, data, session);
         } else if (update.hasMessage() && update.getMessage().hasDocument()) {
             long chatId = update.getMessage().getChatId();
@@ -205,6 +208,14 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
             execute(setMyCommands);
         } catch (TelegramApiException e) {
             System.err.println("Ошибка регистрации команд: " + e.getMessage());
+        }
+    }
+
+    private void answerCallbackQuery(String callbackQueryId) {
+        try {
+            execute(new AnswerCallbackQuery(callbackQueryId));
+        } catch (TelegramApiException e) {
+            System.err.println("Ошибка ответа на callback: " + e.getMessage());
         }
     }
 
