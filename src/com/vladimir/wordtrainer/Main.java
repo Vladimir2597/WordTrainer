@@ -27,9 +27,9 @@ public class Main {
         }
 
         DataSource dataSource = DataSourceProvider.create();
+        UserRepository userRepository = new UserRepository(dataSource);
         DictionaryRepository dictionaryRepository = new DictionaryRepository(dataSource);
         UserDictionaryRepository userDictionaryRepository = new UserDictionaryRepository(dataSource);
-        UserRepository userRepository = new UserRepository(dataSource);
 
         DictionaryService dictionaryService = new DictionaryService(dictionaryRepository, userDictionaryRepository);
         UserService userService = new UserService(userRepository, userDictionaryRepository);
