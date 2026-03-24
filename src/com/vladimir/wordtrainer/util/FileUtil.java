@@ -34,7 +34,7 @@ public class FileUtil {
         return null;
     }
 
-    public static List<Word> loadWordsFromFile(File file){
+    public static List<Word> loadWordsFromFile(File file) {
         List<Word> words = new ArrayList<>();
 
         try {
@@ -44,7 +44,7 @@ public class FileUtil {
                 if (line.isEmpty() || line.startsWith("#")) continue;
                 String[] parts = line.split("=", 3);
                 if (parts.length == 3) {
-                    words.add(new Word(parts[0].trim(), parts[1].trim(), wrapText(parts[2].trim(), 80)));
+                    words.add(new Word(null, parts[0].trim(), parts[1].trim(), wrapText(parts[2].trim(), 80)));
                 }
             }
         } catch (IOException e) {

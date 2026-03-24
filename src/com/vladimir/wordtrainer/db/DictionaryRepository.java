@@ -199,7 +199,7 @@ public class DictionaryRepository {
     }
 
     public List<Word> getWordsByDictionaryId(long dictionaryId) {
-        String sql = "select english, russian, definition from word where dictionary_id = ?";
+        String sql = "select id, english, russian, definition from word where dictionary_id = ?";
         List<Word> words = new ArrayList<>();
 
         try (Connection connection = dataSource.getConnection();
@@ -208,12 +208,43 @@ public class DictionaryRepository {
             ResultSet rs = preparedStatement.executeQuery();
 
             while (rs.next()) {
-                words.add(new Word(rs.getString("english"), rs.getString("russian"), rs.getString("definition")));
+                words.add(new Word(rs.getLong("id"),
+                                   rs.getString("english"),
+                                   rs.getString("russian"),
+                                   rs.getString("definition")));
             }
         } catch (SQLException e) {
             throw new RuntimeException("Ошибка получения слов словаря", e);
         }
 
         return words;
+    }
+
+    public byte[] getAudio(long wordId){
+        String sql = "select audio_data from word where id = ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setLong(1, wordId);
+            ResultSet rs = preparedStatement.executeQuery();
+
+            rs.next();
+            return rs.getBytes("audio_data");
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при получении аудио для слова", e);
+        }
+    }
+
+    public void saveAudio(long wordId, byte[] data){
+        String sql = "update word set audio_data = ? where id = ?";
+
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setBytes(1, data);
+            preparedStatement.setLong(2, wordId);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Ошибка при вставке аудио для слова", e);
+        }
     }
 }

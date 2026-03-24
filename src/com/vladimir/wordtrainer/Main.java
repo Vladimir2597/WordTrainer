@@ -34,7 +34,7 @@ public class Main {
         DictionaryService dictionaryService = new DictionaryService(dictionaryRepository, userDictionaryRepository);
         UserService userService = new UserService(userRepository, userDictionaryRepository);
         TrainingService trainingService = new TrainingService();
-        AudioService audioService = new AudioService(voiceRssKey, "audio");
+        AudioService audioService = new AudioService(voiceRssKey, dictionaryRepository);
 
         try {
             TelegramBotsApi botsApi = new TelegramBotsApi(DefaultBotSession.class);

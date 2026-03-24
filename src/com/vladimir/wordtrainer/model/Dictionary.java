@@ -26,4 +26,8 @@ public class Dictionary {
     public int getCountWords() {
         return words.size();
     }
+
+    public Word findWordById(long id) {
+        return words.stream().filter(w -> w.getId() == id).findFirst().orElse(null);
+    }
 }

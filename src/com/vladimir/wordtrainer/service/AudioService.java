@@ -1,5 +1,7 @@
 package com.vladimir.wordtrainer.service;
 
+import com.vladimir.wordtrainer.db.DictionaryRepository;
+import com.vladimir.wordtrainer.model.Word;
 import ws.schild.jave.Encoder;
 import ws.schild.jave.MultimediaObject;
 import ws.schild.jave.encode.AudioAttributes;
@@ -17,27 +19,29 @@ import java.nio.file.Files;
 
 public class AudioService {
     private final String apiKey;
-    private final String audioDir ;
+    private final DictionaryRepository dictionaryRepository;
+    private final static String AUDIO_DIR = "tempAudio" ;
 
-    public AudioService(String apiKey, String audioDir){
+    public AudioService(String apiKey, DictionaryRepository dictionaryRepository){
         this.apiKey = apiKey;
-        this.audioDir = audioDir;
+        this.dictionaryRepository = dictionaryRepository;
     }
 
-    public File getAudio(String word) {
-        File dir = new File(audioDir);
-        dir.mkdirs();
-
-        String baseName = word.replace(" ", "_").toLowerCase();
-        File oggFile = new File(dir, baseName + ".ogg");
-
-        if (oggFile.exists()) {
-            return oggFile;
+    public File getAudio(Word word) {
+        byte[] audioBytes = dictionaryRepository.getAudio(word.getId());
+        if (audioBytes != null) {
+            try {
+                File tempFile = File.createTempFile("audio_", ".ogg");
+                tempFile.deleteOnExit();
+                Files.write(tempFile.toPath(), audioBytes);
+                return tempFile;
+            } catch (IOException e) {
+                System.err.println("Не удалось создать temp файл: " + e.getMessage());
+            }
         }
 
         HttpClient client = HttpClient.newHttpClient();
-
-        String encodedWord = URLEncoder.encode(word, StandardCharsets.UTF_8);
+        String encodedWord = URLEncoder.encode(word.getEnglish(), StandardCharsets.UTF_8);
         String url = "http://api.voicerss.org/?key=" + apiKey
                 + "&hl=en-gb&src=" + encodedWord
                 + "&c=MP3&f=16khz_16bit_mono";
@@ -50,20 +54,23 @@ public class AudioService {
         try {
             HttpResponse<byte[]> response = client.send(request, HttpResponse.BodyHandlers.ofByteArray());
 
+            File mp3Temp = File.createTempFile("audio_", ".mp3");
+            File oggTemp = File.createTempFile("audio_", ".ogg");
+            mp3Temp.deleteOnExit();
+            oggTemp.deleteOnExit();
+
             String contentType = response.headers().firstValue("Content-Type").orElse("");
             if (!contentType.contains("audio")) {
                 System.err.println("VoiceRSS error: " + new String(response.body()));
                 return null;
             }
+            
+            Files.write(mp3Temp.toPath(), response.body());
 
-            File mp3File = new File(dir, baseName + ".mp3");
-            Files.write(mp3File.toPath(), response.body());
+            boolean converted = convertToOpusOgg(mp3Temp, oggTemp);
+            dictionaryRepository.saveAudio(word.getId(), Files.readAllBytes(oggTemp.toPath()));
 
-            boolean converted = convertToOpusOgg(mp3File, oggFile);
-            mp3File.delete();
-
-            return converted ? oggFile : null;
-
+            return converted ? oggTemp : null;
         } catch (IOException e) {
             System.err.println("Ошибка запроса к VoiceRSS: " + e.getMessage());
             return null;

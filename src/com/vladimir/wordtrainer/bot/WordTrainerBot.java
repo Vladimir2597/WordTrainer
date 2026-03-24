@@ -152,7 +152,8 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
             preTrainingHandler.sendDictionaryList(chatId, session);
 
         } else if (data.startsWith(Callbacks.LISTEN_PREFIX.callback())) {
-            String word = data.substring(Callbacks.LISTEN_PREFIX.callback().length());
+            long wordId = Long.parseLong(data.substring(Callbacks.LISTEN_PREFIX.callback().length()));
+            Word word = session.getDictionary().findWordById(wordId);
             trainingHandler.handleListenCallback(chatId, word);
 
         } else if (data.equals(Callbacks.MANAGE_DICTIONARIES.callback())) {
@@ -242,9 +243,9 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
     }
 
     @Override
-    public void sendWithListenButton(long chatId, String text, String word) {
+    public void sendWithListenButton(long chatId, String text, long wordId) {
         InlineKeyboardButton btn = new InlineKeyboardButton(Callbacks.LISTEN_PREFIX.buttonText());
-        btn.setCallbackData(Callbacks.LISTEN_PREFIX.callback() + word);
+        btn.setCallbackData(Callbacks.LISTEN_PREFIX.callback() + wordId);
         sendWithKeyboard(chatId, text, List.of(List.of(btn)));
     }
 
