@@ -4,6 +4,7 @@ import com.vladimir.wordtrainer.db.DataSourceProvider;
 import com.vladimir.wordtrainer.db.DictionaryRepository;
 import com.vladimir.wordtrainer.model.Word;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import javax.sql.DataSource;
@@ -16,6 +17,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Tag("local-only")
 public class AudioServiceTest {
     private static final DataSource dataSource = DataSourceProvider.create();
     private static final DictionaryRepository dictionaryRepository = new DictionaryRepository(dataSource);
