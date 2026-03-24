@@ -7,7 +7,7 @@ public enum Callbacks {
     RETRY_WRONG("retry_wrong", "Повторить неправильные"),
     RETRY_ALL("retry_all", "Повторить всё заново"),
     BACK_TO_MENU("back_to_menu", "Выбрать другой словарь"),
-    LISTEN("listen", "🔊 Произнести слово"),
+    LISTEN_PREFIX("listen:", "🔊 Произнести слово"),
     MANAGE_DICTIONARIES("manage_dictionaries", "⚙️ Управление словарями"),
     ADD_EXISTING_DICTIONARY("add_existing_dictionary", "➕ Добавить словарь к себе"),
     ADD_DICT_PREFIX("add_dict:", null),
