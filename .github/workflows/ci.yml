@@ -20,6 +20,6 @@ jobs:
           java-version: 21
 
       - name: Run unit tests
-        run: mvn test
+        run: mvn test -DexcludedGroups=local-only
         env:
           VOICERSS_KEY: ${{ secrets.VOICERSS_KEY }}

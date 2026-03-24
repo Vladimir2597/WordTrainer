@@ -16,7 +16,7 @@ public class AbstractWordTrainerTest {
         List<Word> words = new ArrayList<>();
 
         for (int i = 0; i < triples.length; i += 3) {
-            words.add(new Word(triples[i], triples[i+1], triples[i+2]));
+            words.add(new Word(null, triples[i], triples[i+1], triples[i+2]));
         }
 
         return new Dictionary(words, "Test");

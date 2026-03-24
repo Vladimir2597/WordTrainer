@@ -8,6 +8,6 @@ import java.util.List;
 public interface MessageSender {
     void sendText(long chatId, String text);
     void sendWithKeyboard(long chatId, String text, List<List<InlineKeyboardButton>> rows);
-    void sendWithListenButton(long chatId, String text, String word);
+    void sendWithListenButton(long chatId, String text, long wordId);
     void sendAudio(long chatId, File audio);
 }

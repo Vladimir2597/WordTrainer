@@ -2,6 +2,7 @@ package com.vladimir.wordtrainer.bot.handler;
 
 import com.vladimir.wordtrainer.bot.Callbacks;
 import com.vladimir.wordtrainer.bot.MessageSender;
+import com.vladimir.wordtrainer.model.Dictionary;
 import com.vladimir.wordtrainer.model.Word;
 import com.vladimir.wordtrainer.service.AudioService;
 import com.vladimir.wordtrainer.service.TrainingService;
@@ -37,7 +38,7 @@ public class TrainingHandler {
         if (trainer.isFinished()) {
             sendFinishMenu(session, chatId, result + "\n\n" + trainer.getResultText());
         } else {
-            messageSender.sendWithListenButton(chatId, result, currentWord.getEnglish());
+            messageSender.sendWithListenButton(chatId, result, currentWord.getId());
             sendNextQuestion(chatId, session);
         }
     }
@@ -71,7 +72,7 @@ public class TrainingHandler {
         messageSender.sendWithKeyboard(chatId, "♻️ " + text + "\n\nЧто делаем дальше?", keyboard);
     }
 
-    public void handleListenCallback(long chatId, String word) {
+    public void handleListenCallback(long chatId, Word word) {
         java.io.File audio = audioService.getAudio(word);
         if (audio != null) {
             messageSender.sendAudio(chatId, audio);
