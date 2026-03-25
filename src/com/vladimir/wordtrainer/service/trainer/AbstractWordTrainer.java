@@ -96,5 +96,12 @@ public abstract class AbstractWordTrainer implements Trainer {
         return dictionary.getWord(shuffledIndices.get(currentPosition));
     }
 
+    public void moveToNext(boolean isCorrect) {
+        if (isCorrect) {
+            correctIndices.add(shuffledIndices.get(currentPosition));
+        }
+        currentPosition++;
+    }
+
     protected abstract String formatQuestion(Word word);
 }

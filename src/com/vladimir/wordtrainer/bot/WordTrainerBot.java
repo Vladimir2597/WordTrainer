@@ -139,6 +139,10 @@ public class WordTrainerBot extends TelegramLongPollingBot implements MessageSen
             trainingHandler.handleModeSelected(chatId, TrainingService.MODE_RUSSIAN, session);
             trainingHandler.sendNextQuestion(chatId, session);
 
+        } else if (data.equals(Callbacks.MODE_SENTENCE.callback())) {
+            trainingHandler.handleModeSelected(chatId, TrainingService.MODE_SENTENCE, session);
+            trainingHandler.sendNextQuestion(chatId, session);
+
         } else if (data.equals(Callbacks.RETRY_WRONG.callback())) {
             session.getTrainer().resetWithWrongOnly();
             trainingHandler.sendNextQuestion(chatId, session);

@@ -5,10 +5,7 @@ import com.vladimir.wordtrainer.db.DataSourceProvider;
 import com.vladimir.wordtrainer.db.DictionaryRepository;
 import com.vladimir.wordtrainer.db.UserDictionaryRepository;
 import com.vladimir.wordtrainer.db.UserRepository;
-import com.vladimir.wordtrainer.service.AudioService;
-import com.vladimir.wordtrainer.service.DictionaryService;
-import com.vladimir.wordtrainer.service.TrainingService;
-import com.vladimir.wordtrainer.service.UserService;
+import com.vladimir.wordtrainer.service.*;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
@@ -20,11 +17,14 @@ public class Main {
         String botToken = System.getenv("BOT_TOKEN");
         String botUsername = System.getenv("BOT_USERNAME");
         String voiceRssKey = System.getenv("VOICERSS_KEY");
+        String geminiApiKey = System.getenv("GEMINI_API_KEY");
 
-        if (botToken == null || botUsername == null || voiceRssKey == null ) {
-            System.err.println("Ошибка: задайте переменные окружения BOT_TOKEN, BOT_USERNAME и VOICERSS_KEY");
+        if (botToken == null || botUsername == null || voiceRssKey == null || geminiApiKey == null ) {
+            System.err.println("Ошибка: задайте переменные окружения BOT_TOKEN, BOT_USERNAME,  VOICERSS_KEY и GEMINI_API_KEY");
             return;
         }
+
+        AIService aiService = new AIService(geminiApiKey);
 
         DataSource dataSource = DataSourceProvider.create();
         UserRepository userRepository = new UserRepository(dataSource);
@@ -33,7 +33,7 @@ public class Main {
 
         DictionaryService dictionaryService = new DictionaryService(dictionaryRepository, userDictionaryRepository);
         UserService userService = new UserService(userRepository, userDictionaryRepository);
-        TrainingService trainingService = new TrainingService();
+        TrainingService trainingService = new TrainingService(aiService);
         AudioService audioService = new AudioService(voiceRssKey, dictionaryRepository);
 
         try {

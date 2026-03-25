@@ -69,10 +69,13 @@ public class PreTrainingHandler {
         InlineKeyboardButton byRussian = new InlineKeyboardButton(Callbacks.MODE_RUSSIAN.buttonText());
         byRussian.setCallbackData(Callbacks.MODE_RUSSIAN.callback());
 
+        InlineKeyboardButton bySentence = new InlineKeyboardButton(Callbacks.MODE_SENTENCE.buttonText());
+        bySentence.setCallbackData(Callbacks.MODE_SENTENCE.callback());
+
         InlineKeyboardButton backToMenu = new InlineKeyboardButton(Callbacks.BACK_TO_MENU.buttonText());
         backToMenu.setCallbackData(Callbacks.BACK_TO_MENU.callback());
 
         messageSender.sendWithKeyboard(chatId, "Вы выбрали: " + dictionaryName + "\n\nВыберите режим:",
-                List.of(List.of(byDefinition), List.of(byRussian), List.of(backToMenu)));
+                List.of(List.of(byDefinition), List.of(byRussian), List.of(bySentence), List.of(backToMenu)));
     }
 }
