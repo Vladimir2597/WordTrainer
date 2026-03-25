@@ -4,6 +4,7 @@ public enum Callbacks {
     DICT_PREFIX("dict:", null),
     MODE_DEFINITION("mode_definition", "По определению на английском"),
     MODE_RUSSIAN("mode_russian", "По слову на русском"),
+    MODE_SENTENCE("mode_sentence", "✍️ Составить предложение"),
     RETRY_WRONG("retry_wrong", "Повторить неправильные"),
     RETRY_ALL("retry_all", "Повторить всё заново"),
     BACK_TO_MENU("back_to_menu", "Выбрать другой словарь"),
