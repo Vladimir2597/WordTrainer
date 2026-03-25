@@ -17,14 +17,14 @@ public class Main {
         String botToken = System.getenv("BOT_TOKEN");
         String botUsername = System.getenv("BOT_USERNAME");
         String voiceRssKey = System.getenv("VOICERSS_KEY");
-        String geminiApiKey = System.getenv("GEMINI_API_KEY");
+        String AIApiKey = System.getenv("AI_API_KEY");
 
-        if (botToken == null || botUsername == null || voiceRssKey == null || geminiApiKey == null ) {
-            System.err.println("Ошибка: задайте переменные окружения BOT_TOKEN, BOT_USERNAME,  VOICERSS_KEY и GEMINI_API_KEY");
+        if (botToken == null || botUsername == null || voiceRssKey == null || AIApiKey == null ) {
+            System.err.println("Ошибка: задайте переменные окружения BOT_TOKEN, BOT_USERNAME,  VOICERSS_KEY и AI_API_KEY");
             return;
         }
 
-        AIService aiService = new AIService(geminiApiKey);
+        AIService aiService = new AIService(AIApiKey);
 
         DataSource dataSource = DataSourceProvider.create();
         UserRepository userRepository = new UserRepository(dataSource);
